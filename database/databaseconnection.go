@@ -11,13 +11,15 @@ import (
 	"gorm.io/gorm"
 )
 
+var DB *gorm.DB
+
 func DatabaseConnection() {
 	// load database
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("error in loading env file")
 	}
 	// connect database
-	var DB *gorm.DB
+
 	dsn := os.Getenv("DB")
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
