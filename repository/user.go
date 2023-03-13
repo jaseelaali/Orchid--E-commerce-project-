@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
-
-	"golang.org/x/crypto/bcrypt"
+	//"golang.org/x/crypto/bcrypt"
 )
 
 func CreateUser(newUser models.User) error {
@@ -71,19 +70,20 @@ func ActiveUser() ([]models.UserResponses, error) {
 	}
 	return users, nil
 }
-func NewPassword(password string, email string) error {
-	newpassword := password
-	user := email
-	fmt.Println("++++++")
-	fmt.Println(password)
-	fmt.Println("+++++")
-	//fmt.Println(Id)
-	fmt.Println("++++++")
-	Password, err := (bcrypt.GenerateFromPassword([]byte(newpassword), 11))
-	database.DB.Raw("UPDATE password SET password=$1 WHERE id=$2 ", Password, user).Scan(&models.User{})
-	if err != nil {
-		return err
-	}
-	return nil
 
-}
+// func NewPassword(password string, email string) error {
+// 	newpassword := password
+// 	user := email
+// 	fmt.Println("++++++")
+// 	fmt.Println(password)
+// 	fmt.Println("+++++")
+// 	//fmt.Println(Id)
+// 	fmt.Println("++++++")
+// 	Password, err := (bcrypt.GenerateFromPassword([]byte(newpassword), 11))
+// 	database.DB.Raw("UPDATE password SET password=$1 WHERE id=$2 ", Password, user).Scan(&models.User{})
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+
+// }

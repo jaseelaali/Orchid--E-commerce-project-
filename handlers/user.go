@@ -5,14 +5,13 @@ import (
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
 	"github/jaseelaali/orchid/repository"
-
-	//	"net/http"
-	//"os"
+	"net/http"
+	"os"
 	"strconv"
-	//"time"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	//"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -42,10 +41,19 @@ func UserLogin(r *gin.Context) {
 	}
 	if err := r.Bind(&login); err != nil {
 		r.JSON(400, gin.H{"message": "error in binding data"})
+		return
 	}
 	//var password string
 	user := &models.User{}
 	database.DB.Where(&models.User{Email: login.Email, Status: "active"}).First(&user)
+	fmt.Println()
+	if user == nil {
+		r.JSON(400, gin.H{
+			"message": "innalid user",
+		})
+		return
+	}
+
 	//database.DB.Raw("SELECT password FROM users WHERE email='$1'AND status='active';", login.Email).Scan(&password)
 	password := user.Password
 	fmt.Println(password)
@@ -58,35 +66,37 @@ func UserLogin(r *gin.Context) {
 	// fmt.Println(login.Password)
 
 	if err != nil {
-		r.JSON(200, gin.H{"message": err.Error()})
+		r.JSON(400, gin.H{"message": err.Error()})
 		return
 	}
-	r.JSON(400, gin.H{"message": "login successfully"})
-	/*
-		//generate jwt token
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"sub": login.Email,
-			"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
-		})
+	//r.JSON(200, gin.H{"message": "login successfully"})
 
-		//sign and get the complete encoded token as a string using the secret key
-		tokenstring, err := token.SignedString([]byte(os.Getenv("SECRET")))
-		if err != nil {
-			r.JSON(400, gin.H{"message": "unable to create token"})
-		}
-		//send it back
-		r.SetSameSite(http.SameSiteLaxMode)
-		r.SetCookie("Authorization", tokenstring, 3600*24*30, "", "", false, true)
-		r.JSON(200, gin.H{
-			//"token": tokenstring
-		})
+	//generate jwt token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": login.Email,
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
 
-		// func Validate(r *gin.Context){
-		// 	r.JSON(200,gin.H{
-		// 		"message":"loged in"
-		// 	})
-		// }
-	*/
+	//sign and get the complete encoded token as a string using the secret key
+	tokenstring, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	if err != nil {
+		r.JSON(400, gin.H{"message": "unable to create token"})
+		return
+	}
+	//send it back
+	r.SetSameSite(http.SameSiteLaxMode)
+	r.SetCookie("Authorization", tokenstring, 3600*24*30, "", "", false, true)
+	r.JSON(200, gin.H{
+		"token":   tokenstring,
+		"message": "login successfully",
+	})
+
+	// func Validate(r *gin.Context){
+	// 	r.JSON(200,gin.H{
+	// 		"message":"loged in"
+	// 	})
+	// }
+
 }
 
 func ViewUser(r *gin.Context) {
@@ -143,31 +153,33 @@ func ActiveUsers(r *gin.Context) {
 			"message": users})
 	}
 }
-func ChangePassword(r *gin.Context) {
-	var Password struct {
-		//sEmail        string
-		Phone_Number string
-		NewPassword  string
-	}
-	if err := r.Bind(&Password); err != nil {
-		r.JSON(400, gin.H{"message": "error in binding data"})
-	}
-	var email string
-	//database.DB.Where(&models.User{Email: Password.Email, Phone_Number: Password.Phone_Number}).First(&Id)
 
-	database.DB.Raw("SELECT email FROM user WHERE  phone_number=$1;", Password.Phone_Number).Scan(&email)
+// func ChangePassword(r *gin.Context) {
+// 	var Password struct {
+// 		//sEmail        string
+// 		Phone_Number string
+// 		NewPassword  string
+// 	}
+// 	if err := r.Bind(&Password); err != nil {
+// 		r.JSON(400, gin.H{"message": "error in binding data"})
+// 	}
+// 	var email string
+// 	//database.DB.Where(&models.User{Email: Password.Email, Phone_Number: Password.Phone_Number}).First(&Id)
 
-	//Id, _ := strconv.Atoi(r.Query("ID"))
-	fmt.Println("-------------------------")
-	fmt.Println(email)
-	fmt.Println("-------------------------")
+// 	database.DB.Raw("SELECT email FROM user WHERE  phone_number=$1;", Password.Phone_Number).Scan(&email)
 
-	err := repository.NewPassword(Password.NewPassword, email)
-	if err != nil {
-		r.JSON(400, gin.H{
-			"message": err.Error})
-	} else {
-		r.JSON(200, gin.H{
-			"message": "password changed"})
-	}
-}
+// 	//Id, _ := strconv.Atoi(r.Query("ID"))
+// 	fmt.Println("-------------------------")
+// 	fmt.Println(email)
+
+// 	fmt.Println("-------------------------")
+
+// 	err := repository.NewPassword(Password.NewPassword, email)
+// 	if err != nil {
+// 		r.JSON(400, gin.H{
+// 			"message": err.Error})
+// 	} else {
+// 		r.JSON(200, gin.H{
+// 			"message": "password changed"})
+// 	}
+// }
