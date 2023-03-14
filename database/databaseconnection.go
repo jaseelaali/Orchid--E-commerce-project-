@@ -31,6 +31,11 @@ func DatabaseConnection() {
 	err = DB.AutoMigrate(
 		&models.Admin{},
 		&models.User{},
+		&models.UserResponses{},
+		&models.Category{},
+		&models.SubCategory{},
+		&models.Products{},
+		&models.Cart{},
 	)
 	if err != nil {
 		log.Println("error in syncing the database")

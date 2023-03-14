@@ -13,8 +13,9 @@ type SubCategory struct {
 }
 type Products struct {
 	gorm.Model
-	Product_Name   string `json:"product-name" `
-	Product_Colour string `json:"product_colour"`
-	Product_Size   int16  `json:"product_size"`
-	Product_Brand  string `json:"product_brand"`
+	Product_Name   string `json:"product_name" binding:"required"`
+	Product_Colour string `json:"product_colour" binding:"required"`
+	Product_Size   int16  `json:"product_size" binding:"required"`
+	Product_Brand  string `json:"product_brand" binding:"required"`
+	Product_Price  int16  `json:"product_price" binding:"required"`
 }

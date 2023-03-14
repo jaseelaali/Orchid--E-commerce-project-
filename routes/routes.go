@@ -12,6 +12,8 @@ func User(r *gin.Engine) {
 		// user signup+login
 		user.POST("signup", handlers.UserSignUp)
 		user.POST("login", handlers.UserLogin)
+		// cart management
+		user.POST("addcart", handlers.AddCart)
 	}
 }
 func Admin(r *gin.Engine) {
@@ -25,8 +27,13 @@ func Admin(r *gin.Engine) {
 		admin.POST("unblock", handlers.UnBlockUser)
 		admin.GET("viewblockedusers", handlers.BlockedUsers)
 		admin.GET("viewunblockedusers", handlers.ActiveUsers)
+		// category mangement
+		admin.POST("addcategory", handlers.AddCategory)
+		// sub category management
+		admin.POST("addsubcategory", handlers.AddSubCategory)
 		//product managemant
-		admin.POST("add", handlers.AddProducts)
-
+		admin.POST("addproduct", handlers.AddProducts)
+		// cart management
+		//admin.POST("addcart", handlers.AddCart)
 	}
 }
