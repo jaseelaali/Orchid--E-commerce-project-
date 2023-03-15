@@ -32,3 +32,8 @@ func AddCart(r *gin.Context) {
 		"message": "product added to cart sucessfully",
 	})
 }
+func ViewCart(r* gin.Context){
+Id, _ := strconv.Atoi(r.Writer.Header().Get("id"))
+repository.Viewcart(Id)
+
+}

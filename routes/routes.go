@@ -14,6 +14,7 @@ func User(r *gin.Engine) {
 		user.POST("login", handlers.UserLogin)
 		// cart management
 		user.POST("addcart", handlers.AddCart)
+		user.GET("viewcart",handlers.ViewCart)
 	}
 }
 func Admin(r *gin.Engine) {
