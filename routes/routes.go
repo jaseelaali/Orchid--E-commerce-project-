@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github/jaseelaali/orchid/handlers"
+	"github/jaseelaali/orchid/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,8 +14,9 @@ func User(r *gin.Engine) {
 		user.POST("signup", handlers.UserSignUp)
 		user.POST("login", handlers.UserLogin)
 		// cart management
-		user.POST("addcart", handlers.AddCart)
-		user.GET("viewcart",handlers.ViewCart)
+		user.POST("addcart", middleware.RequiredAuthentication, handlers.AddCart)
+		user.GET("viewcart", middleware.RequiredAuthentication, handlers.ViewCart)
+		user.DELETE("deleteitem", middleware.RequiredAuthentication, handlers.DeleteItem)
 	}
 }
 func Admin(r *gin.Engine) {
@@ -35,6 +37,5 @@ func Admin(r *gin.Engine) {
 		//product managemant
 		admin.POST("addproduct", handlers.AddProducts)
 		// cart management
-		//admin.POST("addcart", handlers.AddCart)
 	}
 }

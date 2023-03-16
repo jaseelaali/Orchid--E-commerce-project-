@@ -36,6 +36,7 @@ func DatabaseConnection() {
 		&models.SubCategory{},
 		&models.Products{},
 		&models.Cart{},
+		&models.CartItem{},
 	)
 	if err != nil {
 		log.Println("error in syncing the database")

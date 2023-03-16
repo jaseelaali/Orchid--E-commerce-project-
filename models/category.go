@@ -17,5 +17,6 @@ type Products struct {
 	Product_Colour string `json:"product_colour" binding:"required"`
 	Product_Size   int16  `json:"product_size" binding:"required"`
 	Product_Brand  string `json:"product_brand" binding:"required"`
-	Product_Price  int16  `json:"product_price" binding:"required"`
+	Product_Price  int16
+	Stock          int16
 }

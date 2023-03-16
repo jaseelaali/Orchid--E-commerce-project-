@@ -56,15 +56,11 @@ func UserLogin(r *gin.Context) {
 
 	//database.DB.Raw("SELECT password FROM users WHERE email='$1'AND status='active';", login.Email).Scan(&password)
 	password := user.Password
-	fmt.Println(password)
+
 	//fmt.Println("*****1***")
 
 	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(login.Password))
-	// fmt.Println("*********************************** \n ")
-	// fmt.Println(password)
-	// fmt.Println("*********************************** \n ")
-	// fmt.Println(login.Password)
-
+	
 	if err != nil {
 		r.JSON(400, gin.H{"message": err.Error()})
 		return

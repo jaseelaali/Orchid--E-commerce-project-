@@ -1,7 +1,6 @@
 package repository
 
 import (
-
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
 )
@@ -13,6 +12,7 @@ func Addproduct(product models.Products) error {
 		Product_Size:   product.Product_Size,
 		Product_Brand:  product.Product_Brand,
 		Product_Price:  product.Product_Price,
+		Stock:          product.Stock,
 	})
 	// fmt.Println("***********************")
 	// fmt.Println(product.Product_Size)
