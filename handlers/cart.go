@@ -98,7 +98,7 @@ func DeleteItem(r *gin.Context) {
 	user_id, _ := r.Get("user_id")
 	userID, _ := strconv.Atoi((fmt.Sprint(user_id)))
 	err = repository.Deleteitem(body.Id, body.Quantity, userID)
-	fmt.Println("id:%v**quantity:%v**id:%v;", body.Id, body.Quantity, userID)
+	//mt.Println("id:%v**quantity:%v**id:%v;", body.Id, body.Quantity, userID)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),

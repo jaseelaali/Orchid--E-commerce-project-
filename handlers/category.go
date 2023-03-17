@@ -27,3 +27,17 @@ func AddCategory(r *gin.Context) {
 		"message": "category added successfully",
 	})
 }
+// func EditCategory(r* gin.Context){
+
+// 	err := repository.Editcategory()
+// 	if err!=nil{
+// 		r.JSON(400,gin.H{
+// 			"message": err.Error(),
+// 		})
+// 		return
+// 	}
+// 	r.JSON(200,gin.H{
+// 		"message": "category updated",
+// 	})
+
+// }

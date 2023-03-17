@@ -15,3 +15,10 @@ func Addcategory(category models.Category) error {
 	}
 	return nil
 }
+// func Editcategory()error{
+// 	err:=database.DB.Raw("UPDATE category SET category_name=$1 WHERE id=$2;",name,Id).Scan(&models.Category{})
+// 	if err!= nil{
+// 		return err.Error
+// 	}
+// 	return nil
+// }
