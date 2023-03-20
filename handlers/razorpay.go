@@ -72,7 +72,7 @@ func Payment_Success(r *gin.Context) {
 	signature := r.Query("signature")
 	fmt.Println(payment_id, signature)
 	r.JSON(200, gin.H{
-		//"message": "payment success",engine.LoadHTMLGlob("templates/*.html")
+		//"message": "payment success",engine.LoadHTMLGlob("templates/*.html",Home)
 	})
 
 }

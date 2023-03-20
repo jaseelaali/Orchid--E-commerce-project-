@@ -21,7 +21,7 @@ func CreateUser(newUser models.User) error {
 func View() ([]models.UserResponses, error) {
 	users := []models.UserResponses{}
 	err := database.DB.Raw("SELECT * FROM users;").Scan(&users)
-	if err != nil {
+	if err.Error != nil {
 		return users, err.Error
 	}
 	return users, nil
