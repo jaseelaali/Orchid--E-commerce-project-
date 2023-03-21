@@ -19,9 +19,7 @@ type Home struct {
 }
 
 func Razorpay(r *gin.Context) {
-
-	total_price := 2000 * 100
-
+	total_price := 200
 	client := razorpay.NewClient("rzp_test_7iVTUnCT2A4xG5", "JAUioUJ7ZkBOcwLmXwN85hQ5")
 	razorpaytotal := total_price
 	data := map[string]interface{}{
@@ -40,7 +38,7 @@ func Razorpay(r *gin.Context) {
 		total_price: total_price,
 		Amount:      total_price,
 		OrderId:     value,
-		Email:       "jaseelaali2000@gmail.com",
+		Email:       "jaseela@gmail.com",
 		Contact:     "9909089079",
 	}
 	// order := domain.Orders{
@@ -72,7 +70,7 @@ func Payment_Success(r *gin.Context) {
 	signature := r.Query("signature")
 	fmt.Println(payment_id, signature)
 	r.JSON(200, gin.H{
-		//"message": "payment success",engine.LoadHTMLGlob("templates/*.html",Home)
+		"message": "payment success",
 	})
 
 }

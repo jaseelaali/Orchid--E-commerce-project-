@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
+	"github/jaseelaali/orchid/repository"
 	"math/rand"
 	"strconv"
 
@@ -43,12 +44,9 @@ func ChangePassword(r *gin.Context) {
 		"message": "successfully send the otp",
 		"data":    OTP,
 	})
-
 }
 func sendOTP(phoneNumber string) (int, error) {
 	otpCode := generateOTP()
-	fmt.Printf("***%v**%v*", otpCode, phoneNumber)
-
 	message := "Your OTP code is " + strconv.Itoa(otpCode)
 	_, _, err := twilio.SendSMS("+15302036484", "+91"+phoneNumber, message, "", "")
 	if err != nil {
@@ -58,7 +56,7 @@ func sendOTP(phoneNumber string) (int, error) {
 }
 func generateOTP() int {
 	// Generate a random 4-digit OTP code
-	otp := rand.Intn(8999) + 1000
+	otp := rand.Intn(8899) + 1000
 	fmt.Println(otp)
 	return otp
 }
@@ -73,26 +71,21 @@ func VerifyOtp(r *gin.Context) {
 		r.JSON(400, gin.H{
 			"message": "error in binding data",
 		})
+		return
 	}
 	isValid := VerifyOTP(body.Otp, OTP)
 	if isValid == true {
-		userid, _ := strconv.Atoi(fmt.Sprint(r.Get("user_id")))
+		//userid, _ := strconv.Atoi(fmt.Sprint(r.Get("user_id")))
+		userid := repository.GetId(r)
 		newpasword := body.New_Password
 		confirmpasword := body.Confirm_Password
 		if newpasword == confirmpasword {
-			password, err := bcrypt.GenerateFromPassword([]byte(newpasword), 11)
-			fmt.Println("**********************456")
-			fmt.Println("*********************456")
-
+			password, err := (bcrypt.GenerateFromPassword([]byte(newpasword), 11))
 			Pasword := string(password)
-		
 			var poi string
 			database.DB.Raw("SELECT password FROM users WHERE id=$1", userid).Scan(&poi)
-			fmt.Printf("//////%v", poi)
-
-			fmt.Println("\n\n\n\npassword     :", Pasword, userid)
 			//database.DB.Model(&User).Select("password").Updates(map[string]interface{}{"password": "hello", "age": 18, "active": false})
-// UPDATE users SET name='hello' WHERE id=111;
+			// UPDATE users SET name='hello' WHERE id=111;
 			result := database.DB.Raw("UPDATE users SET password=$1 WHERE id=$2", Pasword, userid).Scan(&models.User{})
 			fmt.Println(result.Error)
 			if result.Error != nil {
@@ -109,15 +102,14 @@ func VerifyOtp(r *gin.Context) {
 		r.JSON(400, gin.H{
 			"message": "passwords are not matched",
 		})
-
+		return
 	} else {
 		r.JSON(400, gin.H{
 			"message": "invalid otp",
 		})
-
+		return
 	}
 }
-
 func VerifyOTP(otpCode, expectedCode int) bool {
 	if otpCode == expectedCode {
 		return true

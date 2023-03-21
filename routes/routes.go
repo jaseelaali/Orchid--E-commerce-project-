@@ -17,6 +17,10 @@ func User(r *gin.Engine) {
 		// user signup+login
 		user.POST("signup", handlers.UserSignUp)
 		user.POST("login", handlers.UserLogin)
+		//profile
+		user.GET("/aboutme", middleware.RequiredAuthenticationUser, handlers.Profile)
+		user.PATCH("/editmyprofile", middleware.RequiredAuthenticationUser, handlers.EditProfile)
+		user.DELETE("/deleteprofile",middleware.RequiredAuthenticationUser,handlers.DeleteProfile)
 		// cart management
 		user.POST("addcart", middleware.RequiredAuthenticationUser, handlers.AddCart)
 		user.GET("viewcart", middleware.RequiredAuthenticationUser, handlers.ViewCart)
@@ -30,7 +34,6 @@ func User(r *gin.Engine) {
 		user.DELETE("/deleteaddress", middleware.RequiredAuthenticationUser, handlers.DeleteAddress)
 		user.GET("/viewaddress", middleware.RequiredAuthenticationUser, handlers.ViewAddress)
 		// order management
-		
 
 		//payment
 		user.GET("/razorpay", handlers.Razorpay)

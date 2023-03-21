@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func AdminLogin(r *gin.Context) {
@@ -22,14 +23,20 @@ func AdminLogin(r *gin.Context) {
 	admin := models.Admin{}
 	database.DB.Where("email=?", login.Email).First(&admin)
 	//err := database.DB.Raw("SELECT password from admins where email='$1'", login.Email).Scan(&password).Error
-	password := admin.Password
-
-	//err := bcrypt.CompareHashAndPassword([]byte(password), []byte(login.Password))
-	if login.Password != password {
-		r.JSON(400, gin.H{"message": "Password not matched"})
+	err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(login.Password))
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": "passwords or email are not matching",
+		})
 		return
 	}
+	/*-----------------------------------------------------------------------------------------------------------------------------*/
+	/*password, err := bcrypt.GenerateFromPassword(([]byte(login.Password)), 11)
+	Password := string(password)
+	fmt.Printf("****password want to databse:%v", Password)
+	database.DB.Raw("UPDATE admins SET password=$1 WHERE email=$2;", Password, admin.Email).Scan(&models.Admin{})*/
 
+	/*---------------------------------------------------------------------------------------------------------------------------------*/
 	//generate jwt token
 	//here call token function
 	token, err := repository.Token(login.Email)

@@ -16,3 +16,8 @@ type User struct {
 	Password     string `json:"password" binding:"required,min=6" gorm:"not null;unique"`
 	Status       string `json:"status"`
 }
+type UserProfile struct {
+	User_Name    string
+	Email        string
+	Phone_Number string
+}
