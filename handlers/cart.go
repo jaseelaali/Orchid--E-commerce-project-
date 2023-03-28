@@ -16,8 +16,7 @@ func AddCart(r *gin.Context) {
 		Product_Quantity int `json:"product_quantity" binding:"required"`
 	}
 
-	user_id, _ := r.Get("user_id")
-	userID, _ := strconv.Atoi((fmt.Sprint(user_id)))
+	user_id := repository.GetId(r)
 	err := r.Bind(&body)
 	if err != nil {
 		r.JSON(400, gin.H{
@@ -40,9 +39,16 @@ func AddCart(r *gin.Context) {
 		return
 	}
 	var alreadyexist int
-	database.DB.Raw("SELECT quantity FROM cart_items WHERE product_id=$1 AND user_id=$2;", body.Product_Id, userID).Scan(&alreadyexist)
+	database.DB.Raw("SELECT quantity FROM cart_items WHERE product_id=$1 AND user_id=$2;", body.Product_Id, user_id).Scan(&alreadyexist)
 	if alreadyexist != 0 {
-		err = repository.ADDcart(alreadyexist, body.Product_Id, body.Product_Quantity, userID)
+		err = repository.ADDcart(alreadyexist, body.Product_Id, body.Product_Quantity, user_id)
+		if err != nil {
+			r.JSON(400, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		sum, err := repository.SumCart(user_id)
 		if err != nil {
 			r.JSON(400, gin.H{
 				"message": err.Error(),
@@ -50,23 +56,37 @@ func AddCart(r *gin.Context) {
 			return
 		}
 		r.JSON(200, gin.H{
-			"message": "product added to cart successfully",
+			"sum of the products is": sum,
 		})
-		return
-	}
-	//database.DB.Raw("UPDATE PRODUCTS SET stock=$1 WHERE id=$2;", stock-body.Product_Quantity, body.Product_Id).Scan(&models.Products{})
-	err = repository.Addcart(body.Product_Id, body.Product_Quantity, userID)
-	if err != nil {
-		r.JSON(400, gin.H{
-			"message": err.Error(),
+
+	} else {
+		//database.DB.Raw("UPDATE PRODUCTS SET stock=$1 WHERE id=$2;", stock-body.Product_Quantity, body.Product_Id).Scan(&models.Products{})
+		err = repository.Addcart(body.Product_Id, body.Product_Quantity, user_id)
+		if err != nil {
+			r.JSON(400, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		sum, err := repository.SumCart(user_id)
+		if err != nil {
+			r.JSON(400, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		r.JSON(200, gin.H{
+			"sum of the products is": sum,
 		})
-		return
+
 	}
+
 	r.JSON(200, gin.H{
+
 		"message": "product added to cart successfully",
 	})
-
 }
+
 func ViewCart(r *gin.Context) {
 
 	user_id, _ := r.Get("user_id")

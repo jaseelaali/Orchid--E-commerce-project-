@@ -20,7 +20,7 @@ func User(r *gin.Engine) {
 		//profile
 		user.GET("/aboutme", middleware.RequiredAuthenticationUser, handlers.Profile)
 		user.PATCH("/editmyprofile", middleware.RequiredAuthenticationUser, handlers.EditProfile)
-		user.DELETE("/deleteprofile",middleware.RequiredAuthenticationUser,handlers.DeleteProfile)
+		user.DELETE("/deleteprofile", middleware.RequiredAuthenticationUser, handlers.DeleteProfile)
 		// cart management
 		user.POST("addcart", middleware.RequiredAuthenticationUser, handlers.AddCart)
 		user.GET("viewcart", middleware.RequiredAuthenticationUser, handlers.ViewCart)
@@ -34,6 +34,8 @@ func User(r *gin.Engine) {
 		user.DELETE("/deleteaddress", middleware.RequiredAuthenticationUser, handlers.DeleteAddress)
 		user.GET("/viewaddress", middleware.RequiredAuthenticationUser, handlers.ViewAddress)
 		// order management
+		user.POST("/addorder", middleware.RequiredAuthenticationUser, handlers.AddOrder)
+		user.GET("/showorder", middleware.RequiredAuthenticationUser, handlers.ShowOrder)
 
 		//payment
 		user.GET("/razorpay", handlers.Razorpay)
@@ -47,7 +49,7 @@ func Admin(r *gin.Engine) {
 		admin.POST("login", handlers.AdminLogin)
 		//user management
 		admin.GET("view", middleware.RequiredAuthenticationAdmin, handlers.ViewUser)
-		admin.POST("block", middleware.RequiredAuthenticationAdmin, handlers.BlockUser)
+		admin.POST("/block", middleware.RequiredAuthenticationAdmin, handlers.BlockUser)
 		admin.POST("unblock", middleware.RequiredAuthenticationAdmin, handlers.UnBlockUser)
 		admin.GET("viewblockedusers", middleware.RequiredAuthenticationAdmin, handlers.BlockedUsers)
 		admin.GET("viewunblockedusers", middleware.RequiredAuthenticationAdmin, handlers.ActiveUsers)
