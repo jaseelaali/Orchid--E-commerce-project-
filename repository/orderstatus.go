@@ -27,7 +27,7 @@ func OrderStatus(user_id int) error {
 		if Result.Error != nil {
 			return Result.Error
 		}
-		Result = database.DB.Raw("INSERT INTO order_statuses(user_id, product_name, quantity, product_price, product_id) VALUES ($1, $2, $3, $4, $5)", user_id, productname, quantity, product_price, product_id[i]).Scan(&models.OrderStatus{})
+		Result = database.DB.Raw("INSERT INTO order_statuses(user_id, product_name, quantity, product_price, product_id,delivery) VALUES ($1, $2, $3, $4, $5,'not done')", user_id, productname, quantity, product_price, product_id[i]).Scan(&models.OrderStatus{})
 		if Result.Error != nil {
 			return Result.Error
 		}

@@ -22,6 +22,7 @@ func AddOrder(r *gin.Context) {
 		"data":    data1,
 		"success": "placed order successfully",
 	})
+	repository.ClearCart(user_id)
 }
 func ShowOrder(r *gin.Context) {
 	user_id := repository.GetId(r)
@@ -34,5 +35,30 @@ func ShowOrder(r *gin.Context) {
 	}
 	r.JSON(200, gin.H{
 		"success": order,
+	})
+}
+func CancelOrder(r *gin.Context) {
+	var body struct {
+		Product_id int `json:"product_id"`
+		Quantity   int `json:"quantity"`
+	}
+	err := r.Bind(&body)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"error": "errr in binding data",
+		})
+		return
+	}
+	user_id := repository.GetId(r)
+	err = repository.Cancel_Order(user_id)
+	fmt.Printf("+++++++++++++++++++++++++++:%v:userid", user_id)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	r.JSON(200, gin.H{
+		"success": "order cancelled",
 	})
 }

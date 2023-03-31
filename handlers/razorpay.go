@@ -23,8 +23,9 @@ type Home struct {
 }
 
 func Razorpay(r *gin.Context) {
-	user_id := 16
+	user_id := 8
 	address_id := 1
+	fmt.Println(user_id)
 
 	total_price, err := repository.SumCart(user_id)
 
@@ -89,21 +90,22 @@ func Payment_Success(r *gin.Context) {
 	// 	return
 	// }
 	signature := r.Query("signature")
-	err := repository.OrderUpdation(payment_id, 16)
+	user_id := 8
+	err := repository.OrderUpdation(payment_id, user_id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),
 		})
 		return
 	}
-	err = repository.OrderStatus(16)
+	err = repository.OrderStatus(user_id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),
 		})
 		return
 	}
-	err = repository.ClearCart(16)
+	err = repository.ClearCart(user_id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),

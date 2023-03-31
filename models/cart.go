@@ -8,7 +8,7 @@ type Cart struct {
 	gorm.Model
 	User_id     int
 	Cart_id     int `json:"cart_id"`
-	Product_id   int
+	Product_id  int
 	Total_price int
 }
 type CartItem struct {
@@ -19,4 +19,5 @@ type CartItem struct {
 	Quantity            int
 	Product_Price       int
 	Product_Total_price int
+	Coupen              string
 }

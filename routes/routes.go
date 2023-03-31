@@ -36,10 +36,14 @@ func User(r *gin.Engine) {
 		// order management
 		user.POST("/addorder", middleware.RequiredAuthenticationUser, handlers.AddOrder)
 		user.GET("/showorder", middleware.RequiredAuthenticationUser, handlers.ShowOrder)
-
+		user.DELETE("/cancelorder", middleware.RequiredAuthenticationUser, handlers.CancelOrder)
 		//payment
 		user.GET("/razorpay", handlers.Razorpay)
 		user.GET("/payment-success", handlers.Payment_Success)
+		//coupens
+		user.GET("/listcoupens", middleware.RequiredAuthenticationUser, handlers.ListCoupen)
+		user.POST("/applycoupens", middleware.RequiredAuthenticationUser, handlers.ApplyCoupen)
+
 	}
 }
 func Admin(r *gin.Engine) {
@@ -69,5 +73,7 @@ func Admin(r *gin.Engine) {
 		admin.DELETE("deleteproducts", middleware.RequiredAuthenticationAdmin, handlers.DeleteProducts)
 		admin.GET("viewproducts", middleware.RequiredAuthenticationAdmin, handlers.ViewProducts)
 		// cart management
+		//coupen
+		admin.POST("/addcoupen", middleware.RequiredAuthenticationAdmin, handlers.AddCoupens)
 	}
 }
