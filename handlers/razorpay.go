@@ -23,12 +23,15 @@ type Home struct {
 }
 
 func Razorpay(r *gin.Context) {
-	user_id := 8
-	address_id := 1
+	user_id := 24
+	address_id := 19
 	fmt.Println(user_id)
 
-	total_price, err := repository.SumCart(user_id)
-
+	total_price, err := repository.Sum(user_id)
+	if err != nil {
+		fmt.Println("Couldn't found the total price")
+	}
+	fmt.Printf("total price is %v", total_price)
 	client := razorpay.NewClient("rzp_test_7iVTUnCT2A4xG5", "JAUioUJ7ZkBOcwLmXwN85hQ5")
 	razorpaytotal := total_price * 100
 	data := map[string]interface{}{
@@ -38,12 +41,13 @@ func Razorpay(r *gin.Context) {
 	body, err := client.Order.Create(data, nil)
 	fmt.Println(body)
 	if err != nil {
+		fmt.Println("Something went wrong")
 		r.HTML(422, "failed to create order", nil)
 	}
 	Order_Id := fmt.Sprint(body["id"])
 	order_id, _ := strconv.Atoi(Order_Id)
 	Home := Home{
-		userid:      "16",
+		userid:      "24",
 		Name:        "jaseela",
 		total_price: total_price,
 		Amount:      total_price,
@@ -90,7 +94,7 @@ func Payment_Success(r *gin.Context) {
 	// 	return
 	// }
 	signature := r.Query("signature")
-	user_id := 8
+	user_id := 24
 	err := repository.OrderUpdation(payment_id, user_id)
 	if err != nil {
 		r.JSON(400, gin.H{
@@ -105,13 +109,13 @@ func Payment_Success(r *gin.Context) {
 		})
 		return
 	}
-	err = repository.ClearCart(user_id)
-	if err != nil {
-		r.JSON(400, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
+	// err = repository.ClearCart(user_id)
+	// if err != nil {
+	// 	r.JSON(400, gin.H{
+	// 		"message": err.Error(),
+	// 	})
+	// 	return
+	// }
 	fmt.Println(payment_id, signature)
 	r.JSON(200, gin.H{
 		"message": "payment success",

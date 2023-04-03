@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/repository"
 
 	"github.com/gin-gonic/gin"
@@ -9,19 +10,38 @@ import (
 
 func AddOrder(r *gin.Context) {
 	user_id := repository.GetId(r)
-	data, err := repository.Add_Order(user_id)
+	var Address_id int
+	result := database.DB.Raw("SELECT id FROM addresses WHERE user_id=$1;", user_id).Scan(&Address_id)
+	if result.Error != nil {
+		return
+	}
+	if Address_id == 0 {
+		r.JSON(400, gin.H{
+			"error": "enter your address",
+		})
+		return
+	}
+	
+	Data, err := repository.Add_Order(user_id, Address_id)
+
 	if err != nil {
 		r.JSON(400, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
-
-	data1 := "your total price is:" + fmt.Sprint(data)
+	data1 := "your total price is:" + fmt.Sprint(Data)
 	r.JSON(200, gin.H{
 		"data":    data1,
 		"success": "placed order successfully",
 	})
+	err = repository.OrderViewUpdation(user_id)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 	repository.ClearCart(user_id)
 }
 func ShowOrder(r *gin.Context) {
@@ -38,20 +58,10 @@ func ShowOrder(r *gin.Context) {
 	})
 }
 func CancelOrder(r *gin.Context) {
-	var body struct {
-		Product_id int `json:"product_id"`
-		Quantity   int `json:"quantity"`
-	}
-	err := r.Bind(&body)
-	if err != nil {
-		r.JSON(400, gin.H{
-			"error": "errr in binding data",
-		})
-		return
-	}
 	user_id := repository.GetId(r)
-	err = repository.Cancel_Order(user_id)
-	fmt.Printf("+++++++++++++++++++++++++++:%v:userid", user_id)
+	fmt.Printf("......................iddd:%v...", user_id)
+
+	err := repository.Cancel_Order(user_id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"error": err.Error(),
@@ -59,6 +69,6 @@ func CancelOrder(r *gin.Context) {
 		return
 	}
 	r.JSON(200, gin.H{
-		"success": "order cancelled",
+		"success": "order deleted",
 	})
 }

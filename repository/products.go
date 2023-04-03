@@ -1,29 +1,42 @@
 package repository
 
 import (
+	"errors"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
 )
 
 func Addproduct(product models.Products) error {
-	err := database.DB.Create(&models.Products{
-		Product_Name:   product.Product_Name,
-		Product_Colour: product.Product_Colour,
-		Product_Size:   product.Product_Size,
-		Product_Brand:  product.Product_Brand,
-		Product_Price:  product.Product_Price,
-		Stock:          product.Stock,
-	})
-	// err := database.DB.Raw("INSERT INTO products (product_name,product_colour,product_size,product_brand,product_price) VALUES ($1,$2,$3,$4,$5);", product.Product_Name,
-	// 	product.Product_Colour, product.Product_Size, product.Product_Brand, product.Product_Price).Scan(&newproduct)
-	if err.Error != nil {
-		return err.Error
+	var count int
+	err := database.DB.Raw("SELECT COUNT(product_name) FROM products WHERE product_name=$1;", product.Product_Name).Scan(&count)
+	if count == 0 {
+		err = database.DB.Create(&models.Products{
+			Product_Name:   product.Product_Name,
+			Product_Colour: product.Product_Colour,
+			Product_Size:   product.Product_Size,
+			Product_Brand:  product.Product_Brand,
+			Product_Price:  product.Product_Price,
+			Stock:          product.Stock,
+		})
+		// err := database.DB.Raw("INSERT INTO products (product_name,product_colour,product_size,product_brand,product_price) VALUES ($1,$2,$3,$4,$5);", product.Product_Name,
+		// 	product.Product_Colour, product.Product_Size, product.Product_Brand, product.Product_Price).Scan(&newproduct)
+		if err.Error != nil {
+			return err.Error
+		}
+		return nil
+	} else {
+		return errors.New("this product already occured")
 	}
-	return nil
 }
 func EditProductName(name string, Id int) error {
-	err := database.DB.Raw("UPDATE products SET product_name=$1 WHERE id =$2;", name, Id).Scan(&models.Products{})
-	return err.Error
+	var count int
+	err := database.DB.Raw("SELECT COUNT(product_name) FROM products WHERE product_name=$1;", name).Scan(&count)
+	if count == 0 {
+		err = database.DB.Raw("UPDATE products SET product_name=$1 WHERE id =$2;", name, Id).Scan(&models.Products{})
+		return err.Error
+	} else {
+		return errors.New("this product already occured")
+	}
 }
 func EditProductColour(colour string, Id int) error {
 	err := database.DB.Raw("UPDATE products SET product_colour=$1 WHERE id =$2;", colour, Id).Scan(&models.Products{})
@@ -46,7 +59,13 @@ func EditProductStock(stock, Id int) error {
 	return err.Error
 }
 func Deleteproduct(Id int) error {
-	err := database.DB.Raw("DELETE FROM products WHERE id=$1", Id).Scan(&models.Products{})
+	var exist int
+	err := database.DB.Raw("SELECT COUNT(id) FROM products WHERE id=$1;", Id).Scan(&exist)
+	if exist == 0 {
+		return errors.New("this product not occured")
+	}
+
+	err = database.DB.Raw("DELETE FROM products WHERE id=$1", Id).Scan(&models.Products{})
 	if err != nil {
 		return err.Error
 	}

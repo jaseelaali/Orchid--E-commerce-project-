@@ -59,7 +59,7 @@ func UserLogin(r *gin.Context) {
 	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(login.Password))
 
 	if err != nil {
-		r.JSON(400, gin.H{"message": err.Error()})
+		r.JSON(400, gin.H{"message": "passwords are not matching "})
 		return
 	}
 	//r.JSON(200, gin.H{"message": "login successfully"})
@@ -93,8 +93,71 @@ func ViewUser(r *gin.Context) {
 	} else {
 		r.JSON(200, gin.H{
 			//"message":"the list
-			"message": users})
+			"List of users": users})
 	}
+}
+func SpeacificUser(r *gin.Context) {
+	var body struct {
+		Id           int    `json:"id"`
+		User_Name    string `json:"user_name"`
+		Email        string `json:"email"`
+		Phone_Number string `json:"phone_number"`
+	}
+	if err := r.Bind(&body); err != nil {
+		r.JSON(400, gin.H{"message": "error in binding data"})
+		return
+	}
+	fmt.Printf(".................%v", body.Id)
+	if body.Id != 0 {
+		information, err := repository.UserById(body.Id)
+
+		if err != nil {
+			r.JSON(400, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		r.JSON(200, gin.H{
+			"success": information,
+		})
+	}
+	if body.User_Name != "" {
+		information, err := repository.UserByName(body.User_Name)
+		if err != nil {
+			r.JSON(400, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		r.JSON(200, gin.H{
+			"success": information,
+		})
+	}
+	if body.Email != "" {
+		information, err := repository.UserByEmail(body.Email)
+		if err != nil {
+			r.JSON(400, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		r.JSON(200, gin.H{
+			"success": information,
+		})
+	}
+	if body.Phone_Number != "" {
+		information, err := repository.UserByNumber(body.Phone_Number)
+		if err != nil {
+			r.JSON(400, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		r.JSON(200, gin.H{
+			"success": information,
+		})
+	}
+
 }
 func BlockUser(r *gin.Context) {
 	ID, _ := strconv.Atoi(r.Query("id"))
@@ -127,6 +190,7 @@ func BlockedUsers(r *gin.Context) {
 			//"message":"the list
 			"message": users})
 	}
+
 }
 func ActiveUsers(r *gin.Context) {
 	users, err := repository.ActiveUser()

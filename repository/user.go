@@ -46,7 +46,7 @@ func UnBlockUser(user_id int) error {
 	var status string
 	database.DB.Raw("SELECT status FROM users WHERE id=$1;", user_id).Scan(&status)
 	if status == "active" {
-		return errors.New("selected user already unblocked")
+		return errors.New("selected user already active")
 	}
 	err := database.DB.Raw("UPDATE users SET status=$1 WHERE id=$2", "active", user_id).Scan(&models.User{})
 	if err.Error != nil {
@@ -87,3 +87,38 @@ func ActiveUser() ([]models.UserResponses, error) {
 // 	return nil
 
 // }
+func UserById(id int) ([]models.UserResponses, error) {
+	body := []models.UserResponses{}
+	fmt.Println("...................", id)
+	result := database.DB.Raw("SELECT * FROM users WHERE id=$1;", id).Scan(&body)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	fmt.Println(body)
+	return body, nil
+
+}
+func UserByName(name string) ([]models.UserResponses, error) {
+	body := []models.UserResponses{}
+	result := database.DB.Raw("SELECT * FROM users WHERE user_name=$1;", name).Scan(&body)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return body, nil
+}
+func UserByEmail(Email string) ([]models.UserResponses, error) {
+	body := []models.UserResponses{}
+	result := database.DB.Raw("SELECT * FROM users WHERE email=$1;", Email).Scan(&body)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return body, nil
+}
+func UserByNumber(number string) ([]models.UserResponses, error) {
+	body := []models.UserResponses{}
+	result := database.DB.Raw("SELECT * FROM users WHERE email=$1;", number).Scan(&body)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return body, nil
+}

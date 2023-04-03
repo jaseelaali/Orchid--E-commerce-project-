@@ -1,6 +1,8 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Order struct {
 	gorm.Model
@@ -10,8 +12,9 @@ type Order struct {
 	TotalCartAmount int
 	Coupen          string
 	Coupen_Name     string
+	Discount        int
 	Total_Amount    int
-	Payment_Method  int
+	Payment_Method  string
 	Payment_Status  string
 	Payment_Id      string
 	Order_Status    string
@@ -25,4 +28,14 @@ type OrderStatus struct {
 	Quantity      int
 	Product_Price int
 	Delivery      string
+}
+type OrderedProduct struct {
+	gorm.Model
+	User_id    int
+	Product_id int
+	Product    string
+	Quantity   int
+	Price      int
+	Total      int
+	Payment    string
 }

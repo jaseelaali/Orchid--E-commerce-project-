@@ -48,6 +48,7 @@ func ListCoupen(r *gin.Context) {
 		"coupens": coupen,
 	})
 }
+
 func ApplyCoupen(r *gin.Context) {
 	var body struct {
 		Coupenname string `json:"coupenname"`

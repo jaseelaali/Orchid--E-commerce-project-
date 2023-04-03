@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
@@ -38,7 +39,12 @@ func EditPin(pin, Id int) error {
 }
 
 func Deleteaddress(User_id, Address_id int) error {
-	err := database.DB.Raw("DELETE FROM addresses WHERE user_id=$1 AND id=$2", User_id, Address_id).Scan(&models.Address{})
+	var exist int
+	err := database.DB.Raw("SELECT COUNT(id) FROM addresses WHERE user_id=$1 AND id=$2;", User_id, Address_id).Scan(&exist)
+	if exist == 0 {
+		return errors.New("this address not occured")
+	}
+	err = database.DB.Raw("DELETE FROM addresses WHERE user_id=$1 AND id=$2", User_id, Address_id).Scan(&models.Address{})
 	if err != nil {
 		return err.Error
 	}
@@ -46,9 +52,16 @@ func Deleteaddress(User_id, Address_id int) error {
 }
 func Viewaddress(user_id int) ([]models.Address, error) {
 	address := []models.Address{}
+	fmt.Println("*********", address)
+
 	err := database.DB.Raw("SELECT * FROM addresses WHERE user_id=$1", user_id).Scan(&address)
+	fmt.Println("*********", address)
 	if err != nil {
 		return address, err.Error
+	}
+
+	if address == nil {
+		return nil, errors.New("add your address")
 	}
 	return address, nil
 }

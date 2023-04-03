@@ -97,6 +97,7 @@ func EditProducts(r *gin.Context) {
 
 }
 func DeleteProducts(r *gin.Context) {
+
 	var body struct {
 		Product_id int `json:"product_id" binding:"required"`
 	}
@@ -124,10 +125,10 @@ func ViewProducts(r *gin.Context) {
 	if err != nil {
 
 		r.JSON(400, gin.H{
-			"message": err.Error})
+			"error": err.Error})
 		return
 	}
 	r.JSON(200, gin.H{
-		"data": Products,
+		"products": Products,
 	})
 }

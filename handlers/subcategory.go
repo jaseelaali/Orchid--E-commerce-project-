@@ -9,6 +9,7 @@ import (
 
 func AddSubCategory(r *gin.Context) {
 	Subcategory := models.SubCategory{}
+	
 	err := r.Bind(&Subcategory)
 	if err != nil {
 		r.JSON(400, gin.H{

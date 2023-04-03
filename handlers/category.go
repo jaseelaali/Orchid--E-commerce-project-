@@ -68,7 +68,7 @@ func DeleteCategory(r *gin.Context) {
 	err = repository.Deletecategory(body.Category_id)
 	if err != nil {
 		r.JSON(400, gin.H{
-			"message": err.Error,
+			"message": err.Error(),
 		})
 		return
 	}
@@ -84,7 +84,7 @@ func ViewCategory(r *gin.Context) {
 		})
 		return
 	}
-	r.JSON(400, gin.H{
+	r.JSON(200, gin.H{
 		"message": Category,
 	})
 
@@ -119,17 +119,17 @@ func DeleteSubCategory(r *gin.Context) {
 		SubCategory_id int `json:"subcategory_id"`
 	}
 	err := r.Bind(&body)
-	fmt.Println(body.SubCategory_id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": "error in binding data",
 		})
 		return
 	}
+
 	err = repository.DeleteSubcategory(body.SubCategory_id)
 	if err != nil {
 		r.JSON(400, gin.H{
-			"message": err.Error,
+			"message": err.Error(),
 		})
 		return
 	}

@@ -3,6 +3,7 @@ package repository
 import (
 	//"fmt"
 
+	"errors"
 	"fmt"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
@@ -58,30 +59,37 @@ func Viewcart(ID int) ([]models.CartItem, error) {
 	return cart, nil
 
 }
-func Deleteitem(id, QUantity, User_Id int) error {
-	Id := id
-	Quantity := QUantity
-	U_Id := User_Id
+func Deleteitem(Id, Quantity, U_Id int) error {
 	var OldQuantity, Price int
 	err := database.DB.Raw("SELECT quantity FROM cart_items WHERE user_id=$1 AND product_id=$2;", U_Id, Id).Scan(&OldQuantity)
 	err = database.DB.Raw("SELECT product_price FROM cart_items WHERE user_id=$1 AND product_id=$2;", U_Id, Id).Scan(&Price)
-	if OldQuantity >= 0 {
-
+	if OldQuantity > 0 {
 		quantity := (OldQuantity - Quantity)
-		price := Price * quantity
-		//fmt.Println("****old:%v**kal:%v**new:%v***price:%v", OldQuantity, Quantity, quantity, price)
-		err = database.DB.Raw("UPDATE cart_items SET quantity=$1 WHERE user_id=$2 AND product_id=$3;", quantity, U_Id, Id).Scan(&models.CartItem{})
-		err = database.DB.Raw("UPDATE cart_items SET product_total_price=$1 WHERE user_id=$2 AND product_id=$3;", price, U_Id, Id).Scan(&models.CartItem{})
-
-		if quantity == 0 {
-			database.DB.Raw("DELETE FROM cart_items WHERE user_id=$1 AND product_id=$2;", U_Id, Id).Scan(&models.CartItem{})
+		if quantity > 0 {
+			price := Price * quantity
+			//fmt.Println("****old:%v**kal:%v**new:%v***price:%v", OldQuantity, Quantity, quantity, price)
+			err = database.DB.Raw("UPDATE cart_items SET quantity=$1 WHERE user_id=$2 AND product_id=$3;", quantity, U_Id, Id).Scan(&models.CartItem{})
+			if err.Error != nil {
+				return err.Error
+			}
+			err = database.DB.Raw("UPDATE cart_items SET product_total_price=$1 WHERE user_id=$2 AND product_id=$3;", price, U_Id, Id).Scan(&models.CartItem{})
+			if err.Error != nil {
+				return err.Error
+			}
+		} else if quantity == 0 {
+			err = database.DB.Raw("DELETE  FROM cart_items WHERE user_id=$1 AND product_id=$2;", U_Id, Id).Scan(&models.CartItem{})
+			if err.Error != nil {
+				return err.Error
+			}
+		} else {
+			return errors.New("check you products count")
 		}
 		if err.Error != nil {
 			return err.Error
 		}
 		return nil
 	} else {
-		return err.Error
+		return errors.New("no item present")
 	}
 }
 
@@ -102,8 +110,17 @@ func Deleteitem(id, QUantity, User_Id int) error {
 func SumCart(user_id int) (int, error) {
 
 	var sum int
-	result := database.DB.Raw("SELECT SUM(product_total_price)FROM cart_items WHERE user_id=$1;", user_id).Scan(&sum)
+	result := database.DB.Raw("SELECT SUM(product_total_price) FROM cart_items WHERE user_id=$1;", user_id).Scan(&sum)
 	fmt.Println("\n\nthe sum is :", sum, user_id)
+	if result != nil {
+		return sum, result.Error
+	}
+	return sum, nil
+}
+func Sum(user_id int) (int, error) {
+	var sum int
+	result := database.DB.Raw("SELECT total_amount FROM orders WHERE user_id=$1;", user_id).Scan(&sum)
+	fmt.Println("\n\the sum is :", sum, user_id)
 	if result != nil {
 		return sum, result.Error
 	}

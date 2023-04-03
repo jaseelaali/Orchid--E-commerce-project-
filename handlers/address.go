@@ -50,10 +50,7 @@ func Address(r *gin.Context) {
 }
 
 func EditAddress(r *gin.Context) {
-
 	Id := repository.GetId(r)
-	fmt.Printf("*****%v*****+1+", Id)
-
 	var body struct {
 		House_name string `json:"house_name"`
 		Place      string `json:"place"`
@@ -143,10 +140,10 @@ func DeleteAddress(r *gin.Context) {
 	})
 
 }
-func ViewAddress(r *gin.Context){
-	user_id:=repository.GetId(r)
-	address,err:=repository.Viewaddress(user_id)
-	if err!=nil{
+func ViewAddress(r *gin.Context) {
+	user_id := repository.GetId(r)
+	address, err := repository.Viewaddress(user_id)
+	if err != nil {
 		r.JSON(400, gin.H{
 			"MESSAGE": err.Error(),
 		})

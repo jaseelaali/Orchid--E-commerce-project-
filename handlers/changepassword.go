@@ -47,6 +47,7 @@ func ChangePassword(r *gin.Context) {
 }
 func sendOTP(phoneNumber string) (int, error) {
 	otpCode := generateOTP()
+	fmt.Println(otpCode)
 	message := "Your OTP code is " + strconv.Itoa(otpCode)
 	_, _, err := twilio.SendSMS("+15302036484", "+91"+phoneNumber, message, "", "")
 	if err != nil {

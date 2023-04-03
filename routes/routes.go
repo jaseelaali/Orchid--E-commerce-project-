@@ -22,9 +22,12 @@ func User(r *gin.Engine) {
 		user.PATCH("/editmyprofile", middleware.RequiredAuthenticationUser, handlers.EditProfile)
 		user.DELETE("/deleteprofile", middleware.RequiredAuthenticationUser, handlers.DeleteProfile)
 		// cart management
-		user.POST("addcart", middleware.RequiredAuthenticationUser, handlers.AddCart)
-		user.GET("viewcart", middleware.RequiredAuthenticationUser, handlers.ViewCart)
-		user.DELETE("deleteitem", middleware.RequiredAuthenticationUser, handlers.DeleteItem)
+		user.POST("/addcart", middleware.RequiredAuthenticationUser, handlers.AddCart)
+		user.GET("/viewcart", middleware.RequiredAuthenticationUser, handlers.ViewCart)
+		user.DELETE("/deleteitem", middleware.RequiredAuthenticationUser, handlers.DeleteItem)
+		//product
+		user.GET("/viewproducts", middleware.RequiredAuthenticationUser, handlers.ViewProducts)
+
 		//change password
 		user.POST("changepassword", middleware.RequiredAuthenticationUser, handlers.ChangePassword)
 		user.POST("verifyotp", middleware.RequiredAuthenticationUser, handlers.VerifyOtp)
@@ -50,30 +53,32 @@ func Admin(r *gin.Engine) {
 	admin := r.Group("/admin")
 	{
 		//admin login
-		admin.POST("login", handlers.AdminLogin)
+		admin.POST("/login", handlers.AdminLogin)
 		//user management
-		admin.GET("view", middleware.RequiredAuthenticationAdmin, handlers.ViewUser)
+		admin.GET("/view", middleware.RequiredAuthenticationAdmin, handlers.ViewUser)
+		admin.GET("/speacificuser", middleware.RequiredAuthenticationAdmin, handlers.SpeacificUser)
 		admin.POST("/block", middleware.RequiredAuthenticationAdmin, handlers.BlockUser)
-		admin.POST("unblock", middleware.RequiredAuthenticationAdmin, handlers.UnBlockUser)
-		admin.GET("viewblockedusers", middleware.RequiredAuthenticationAdmin, handlers.BlockedUsers)
-		admin.GET("viewunblockedusers", middleware.RequiredAuthenticationAdmin, handlers.ActiveUsers)
+		admin.POST("/unblock", middleware.RequiredAuthenticationAdmin, handlers.UnBlockUser)
+		admin.GET("/viewblockedusers", middleware.RequiredAuthenticationAdmin, handlers.BlockedUsers)
+		admin.GET("/viewunblockedusers", middleware.RequiredAuthenticationAdmin, handlers.ActiveUsers)
 		// category mangement
-		admin.POST("addcategory", middleware.RequiredAuthenticationAdmin, handlers.AddCategory)
+		admin.POST("/addcategory", middleware.RequiredAuthenticationAdmin, handlers.AddCategory)
 		admin.PATCH("editcategory", middleware.RequiredAuthenticationAdmin, handlers.EditCategory)
-		admin.DELETE("deletecategory", middleware.RequiredAuthenticationAdmin, handlers.DeleteCategory)
-		admin.GET("viewcategory", middleware.RequiredAuthenticationAdmin, handlers.ViewCategory)
+		admin.DELETE("/deletecategory", middleware.RequiredAuthenticationAdmin, handlers.DeleteCategory)
+		admin.GET("/viewcategory", middleware.RequiredAuthenticationAdmin, handlers.ViewCategory)
 		// sub category management
-		admin.POST("addsubcategory", middleware.RequiredAuthenticationAdmin, handlers.AddSubCategory)
-		admin.PATCH("editsubcategory", middleware.RequiredAuthenticationAdmin, handlers.EditSubCategory)
-		admin.DELETE("deletesubcategory", middleware.RequiredAuthenticationAdmin, handlers.DeleteSubCategory)
-		admin.GET("viewsubcategory", handlers.ViewSubCategory)
+		admin.POST("/addsubcategory", middleware.RequiredAuthenticationAdmin, handlers.AddSubCategory)
+		admin.PATCH("/editsubcategory", middleware.RequiredAuthenticationAdmin, handlers.EditSubCategory)
+		admin.DELETE("/deletesubcategory", middleware.RequiredAuthenticationAdmin, handlers.DeleteSubCategory)
+		admin.GET("/viewsubcategory", middleware.RequiredAuthenticationAdmin, handlers.ViewSubCategory)
 		//product managemant
-		admin.POST("addproduct", middleware.RequiredAuthenticationAdmin, handlers.AddProducts)
-		admin.PATCH("editproducts", middleware.RequiredAuthenticationAdmin, handlers.EditProducts)
-		admin.DELETE("deleteproducts", middleware.RequiredAuthenticationAdmin, handlers.DeleteProducts)
-		admin.GET("viewproducts", middleware.RequiredAuthenticationAdmin, handlers.ViewProducts)
-		// cart management
+		admin.POST("/addproduct", middleware.RequiredAuthenticationAdmin, handlers.AddProducts)
+		admin.PATCH("/editproducts", middleware.RequiredAuthenticationAdmin, handlers.EditProducts)
+		admin.DELETE("/deleteproducts", middleware.RequiredAuthenticationAdmin, handlers.DeleteProducts)
+		admin.GET("/viewproducts", middleware.RequiredAuthenticationAdmin, handlers.ViewProducts)
 		//coupen
 		admin.POST("/addcoupen", middleware.RequiredAuthenticationAdmin, handlers.AddCoupens)
+		admin.GET("/listcoupen", middleware.RequiredAuthenticationAdmin, handlers.ListCoupen)
+
 	}
 }

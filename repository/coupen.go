@@ -9,14 +9,19 @@ import (
 )
 
 func Addcoupen(code string, expiry time.Time, minamount, amount int) error {
-
-	fmt.Printf("----------%v", expiry)
-	result := database.DB.Raw("INSERT INTO coupens(code,expiry,min_amount,amount,status)VALUES($1,$2,$3,$4,$5)", code, expiry, minamount, amount, "true").Scan(&models.Coupen{})
-	if result.Error != nil {
-		return result.Error
+	var count int
+	result := database.DB.Raw("SELECT COUNT(code) FROM coupens WHERE code=$1;", code).Scan(&count)
+	if count == 0 {
+		fmt.Printf("----------%v", expiry)
+		result = database.DB.Raw("INSERT INTO coupens(code,expiry,min_amount,amount,status)VALUES($1,$2,$3,$4,$5)", code, expiry, minamount, amount, "true").Scan(&models.Coupen{})
+		if result.Error != nil {
+			return result.Error
+		}
+		return nil
+	} else {
+		return errors.New("thiscoupen already occured")
 	}
 
-	return nil
 }
 func Listcoupen() ([]models.Coupen, error) {
 	err := Updatecoupen()
@@ -30,25 +35,24 @@ func Listcoupen() ([]models.Coupen, error) {
 	}
 	return body, nil
 }
+
 func Updatecoupen() error {
 	body := []models.Coupen{}
-	//time:=time.Now()
-	result := database.DB.Raw("SELECT expiry FROM coupens WHERE status=$1;", "true").Scan(&body)
+	result := database.DB.Raw("SELECT expiry FROM coupens WHERE status = ?;", "true").Scan(&body)
 	if result.Error != nil {
 		return result.Error
 	}
 	for i := range body {
 		if body[i].Expiry.Before(time.Now()) {
-			result := database.DB.Raw("UPDATE coupens SET status=$1;", "false").Scan(&models.Coupen{})
+			result := database.DB.Raw("UPDATE coupens SET status = ?;", "false").Scan(&models.Coupen{})
 			if result.Error != nil {
 				return result.Error
 			}
 		}
-
 	}
 	return nil
-
 }
+
 func Applycoupen(user_id int, name string) (int, error) {
 	body := models.Coupen{}
 	body1 := models.Order{}
@@ -57,7 +61,7 @@ func Applycoupen(user_id int, name string) (int, error) {
 		return 0, result.Error
 	}
 	if body.Status == "true" {
-		result = database.DB.Raw("SELECT * FROM orders WHERE user_id=$1 and coupen is null and coupen_name is null;", user_id).Scan(&body1)
+		result = database.DB.Raw("SELECT * FROM orders WHERE user_id=$1 AND coupen is null AND coupen_name is null AND payment_status is null;", user_id).Scan(&body1)
 		//result = database.DB.Where("user_id", user_id).First(&body1)
 		if result.Error != nil {
 			return 0, result.Error
