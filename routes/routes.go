@@ -46,6 +46,12 @@ func User(r *gin.Engine) {
 		//coupens
 		user.GET("/listcoupens", middleware.RequiredAuthenticationUser, handlers.ListCoupen)
 		user.POST("/applycoupens", middleware.RequiredAuthenticationUser, handlers.ApplyCoupen)
+		//wishlist
+		user.POST("/addwishlist", middleware.RequiredAuthenticationUser, handlers.AddWishList)
+		user.GET("/listwishlist", middleware.RequiredAuthenticationUser, handlers.ListWishlist)
+		user.DELETE("/removewishlist", middleware.RequiredAuthenticationUser, handlers.RemoveWishlist)
+		//Return my product
+		//user.POST("/addwishlist", middleware.RequiredAuthenticationUser, handlers.RetunMyProduct)
 
 	}
 }
@@ -79,6 +85,9 @@ func Admin(r *gin.Engine) {
 		//coupen
 		admin.POST("/addcoupen", middleware.RequiredAuthenticationAdmin, handlers.AddCoupens)
 		admin.GET("/listcoupen", middleware.RequiredAuthenticationAdmin, handlers.ListCoupen)
+
+		//sale report
+		admin.GET("/salesreport", middleware.RequiredAuthenticationAdmin, handlers.SalesReport)
 
 	}
 }

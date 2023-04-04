@@ -41,7 +41,7 @@ func ClearCart(user_id int) error {
 	}
 	return nil
 }
-func OrderViewUpdation(user_id int) error {
+func OrderViewUpdation(user_id  int) error {
 	var product_id []int
 	database.DB.Raw("SELECT product_id FROM cart_items WHERE user_id=$1;", user_id).Scan(&product_id)
 	for i := range product_id {
@@ -63,7 +63,7 @@ func OrderViewUpdation(user_id int) error {
 		if Result.Error != nil {
 			return Result.Error
 		}
-		Result = database.DB.Raw("UPDATE ordered_products  SET product=$1, quantity=$2, price=$3,total=$4, payment=$5 WHERE user_id=$6 AND product_id=$7 ;", productname, quantity, product_price, quantity*product_price, "not done", user_id, product_id[i]).Scan(&models.OrderedProduct{})
+		Result = database.DB.Raw("UPDATE ordered_products  SET product=$1, quantity=$2, price=$3,total=$4, payment=$5 WHERE user_id=$6 AND product_id=$7  AND ;", productname, quantity, product_price, quantity*product_price, "not done", user_id, product_id[i]).Scan(&models.OrderedProduct{})
 	}
 	return nil
 }

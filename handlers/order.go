@@ -21,9 +21,9 @@ func AddOrder(r *gin.Context) {
 		})
 		return
 	}
-	
-	Data, err := repository.Add_Order(user_id, Address_id)
 
+	Data, err := repository.Add_Order(user_id, Address_id)
+	//fmt.Print(o_id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"error": err.Error(),

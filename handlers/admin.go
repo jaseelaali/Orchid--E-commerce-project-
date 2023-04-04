@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"encoding/csv"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
 	"github/jaseelaali/orchid/repository"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -61,4 +63,51 @@ func AdminLogin(r *gin.Context) {
 	// 	})
 	// }
 
+}
+
+func SalesReport(r *gin.Context) {
+
+	sales, err := repository.SalesReport()
+	if err != nil {
+		r.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	r.Header("Content-Type", "text/csv")
+	r.Header("Content-Disposition", "attachment;filename=sales.csv")
+
+	// Create a CSV writer using our response writer as our io.Writer
+	wr := csv.NewWriter(r.Writer)
+
+	// Write CSV header row
+	headers := []string{"Order ID", "User ID", "Coupon", "Total Amount", "Payment Method", "Payment ID"}
+	if err := wr.Write(headers); err != nil {
+		r.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	// Write data rows
+	for _, sale := range sales {
+		row := []string{
+			strconv.Itoa(int(sale.ID)),
+			strconv.Itoa(sale.User_Id),
+			sale.Coupen_Name,
+			strconv.Itoa(sale.Total_Amount),
+			sale.Payment_Method,
+			sale.Payment_Id,
+		}
+		if err := wr.Write(row); err != nil {
+			r.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+	}
+
+	// Flush the writer's buffer to ensure all data is written to the client
+	wr.Flush()
+	if err := wr.Error(); err != nil {
+		r.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 }
