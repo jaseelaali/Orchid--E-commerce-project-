@@ -88,11 +88,20 @@ func AddCart(r *gin.Context) {
 }
 
 func ViewCart(r *gin.Context) {
-
+	var Body struct {
+		Page    int `json:"page" binding:"required"`
+		Perpage int `json:"perpage" binding:"required"`
+	}
+	err := r.ShouldBind(&Body)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": err.Error()})
+		return
+	}
 	user_id, _ := r.Get("user_id")
 	userID, _ := strconv.Atoi((fmt.Sprint(user_id)))
 
-	cart, err := repository.Viewcart(userID)
+	cart, metadata, err := repository.Viewcart(userID, Body.Page, Body.Perpage)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),
@@ -100,7 +109,9 @@ func ViewCart(r *gin.Context) {
 		return
 	}
 
-	r.JSON(200, cart)
+	r.JSON(200, gin.H{
+		"cart":     cart,
+		"metadata": metadata})
 
 }
 func DeleteItem(r *gin.Context) {

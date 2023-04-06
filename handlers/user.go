@@ -86,14 +86,26 @@ func UserLogin(r *gin.Context) {
 
 func ViewUser(r *gin.Context) {
 
-	users, err := repository.View()
+	var Body struct {
+		Page    int `json:"page" binding:"required"`
+		Perpage int `json:"perpage" binding:"required"`
+	}
+	err := r.ShouldBind(&Body)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": err.Error()})
+		return
+	}
+	users, metaData, err := repository.View(Body.Page, Body.Perpage)
+	fmt.Println("...............hh", Body.Page, Body.Perpage)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error()})
 	} else {
 		r.JSON(200, gin.H{
 			//"message":"the list
-			"List of users": users})
+			"List of users": users,
+			"metadata":      metaData})
 	}
 }
 func SpeacificUser(r *gin.Context) {
@@ -180,26 +192,49 @@ func UnBlockUser(r *gin.Context) {
 }
 
 func BlockedUsers(r *gin.Context) {
+	var Body struct {
+		Page    int `json:"page" binding:"required"`
+		Perpage int `json:"perpage" binding:"required"`
+	}
+	err := r.ShouldBind(&Body)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": err.Error()})
+		return
+	}
 
-	users, err := repository.BlocUsers()
+	users, metadata, err := repository.BlocUsers(Body.Page, Body.Perpage)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error()})
 	} else {
 		r.JSON(200, gin.H{
 			//"message":"the list
-			"message": users})
+			"message":  users,
+			"metadata": metadata})
 	}
 
 }
 func ActiveUsers(r *gin.Context) {
-	users, err := repository.ActiveUser()
+	var Body struct {
+		Page    int `json:"page" binding:"required"`
+		Perpage int `json:"perpage" binding:"required"`
+	}
+	err := r.ShouldBind(&Body)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": err.Error()})
+		return
+	}
+
+	users, metadata, err := repository.ActiveUser(Body.Page, Body.Perpage)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error()})
 	} else {
 		r.JSON(200, gin.H{
-			"message": users})
+			"message":  users,
+			"metadata": metadata})
 	}
 }
 

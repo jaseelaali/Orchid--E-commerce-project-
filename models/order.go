@@ -27,6 +27,7 @@ type OrderStatus struct {
 	Product_name  string
 	Quantity      int
 	Product_Price int
+	Payment_Id    string
 	Delivery      string
 }
 type OrderedProduct struct {

@@ -19,7 +19,7 @@ func Addcoupen(code string, expiry time.Time, minamount, amount int) error {
 		}
 		return nil
 	} else {
-		return errors.New("thiscoupen already occured")
+		return errors.New("this coupen already occured")
 	}
 
 }
@@ -61,7 +61,7 @@ func Applycoupen(user_id int, name string) (int, error) {
 		return 0, result.Error
 	}
 	if body.Status == "true" {
-		result = database.DB.Raw("SELECT * FROM orders WHERE user_id=$1 AND coupen is null AND coupen_name is null AND payment_status is null;", user_id).Scan(&body1)
+		result = database.DB.Raw("SELECT * FROM orders WHERE user_id=$1 AND coupen is null  AND payment_status=$2;", user_id, "not done").Scan(&body1)
 		//result = database.DB.Where("user_id", user_id).First(&body1)
 		if result.Error != nil {
 			return 0, result.Error
@@ -71,13 +71,18 @@ func Applycoupen(user_id int, name string) (int, error) {
 		if result.Error != nil {
 			return 0, result.Error
 		}
+		fmt.Printf("totalamount 1 from cart:%v\n", body1.TotalCartAmount)
+
 		fmt.Println("count is ", names)
 		if names == 0 {
 			fmt.Printf("totalamount from cart:%v\n", body1.TotalCartAmount)
 			fmt.Printf(":dicount:%v\n", body.Amount)
 
 			if body.MinAmount <= body1.TotalCartAmount {
-				result := database.DB.Raw("UPDATE orders SET coupen=$1,coupen_name=$2,total_amount=$3 WHERE user_id=$4;", "applied", name, body1.TotalCartAmount-body.Amount, user_id).Scan(&models.Order{})
+				fmt.Println(body.MinAmount)
+				fmt.Printf("........................................")
+				fmt.Println(body1.TotalCartAmount)
+				result := database.DB.Raw("UPDATE orders SET coupen=$1,coupen_name=$2,total_amount=$3 WHERE user_id=$4 AND payment_status=$5;", "applied", name, body1.TotalCartAmount-body.Amount, user_id, "not done").Scan(&models.Order{})
 				if result.Error != nil {
 					return 0, result.Error
 				} else {
@@ -86,7 +91,7 @@ func Applycoupen(user_id int, name string) (int, error) {
 				}
 
 			} else {
-				result := database.DB.Raw("UPDATE orders SET coupen=$1,total_amount=$2 WHERE user_id=$3;", "not-eligible", body1.TotalCartAmount, user_id).Scan(&models.Order{})
+				result := database.DB.Raw("UPDATE orders SET coupen=$1 WHERE user_id=$2 AND payment_status is null;", "not-eligible", user_id).Scan(&models.Order{})
 				if result.Error != nil {
 					return 0, result.Error
 				}

@@ -7,6 +7,9 @@ import (
 	"fmt"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
+	"github/jaseelaali/orchid/utils"
+
+	"gorm.io/gorm"
 )
 
 func Addcart(P_Id, Quantity, U_Id int) error {
@@ -47,17 +50,28 @@ func ADDcart(newquantity, P_Id, Quantity, U_Id int) error {
 	return nil
 }
 
-func Viewcart(ID int) ([]models.CartItem, error) {
+func Viewcart(ID, page, perPage int) ([]models.CartItem, utils.MetaData, error) {
 	Id := ID
-	//fmt.Println("************* %v", Id)
 	cart := []models.CartItem{}
-	err := database.DB.Raw("SELECT * FROM cart_items WHERE  user_id=$1 ;", Id).Scan(&cart)
-	if err.Error != nil {
-		return cart, err.Error
+
+	var totalRecords int64
+	err := database.DB.Raw("SELECT COUNT(user_id) FROM cart_items  WHERE  user_id=?;", Id).Scan(&totalRecords).Error
+	if err != nil {
+		return cart, utils.MetaData{}, err
 	}
-
-	return cart, nil
-
+	metaData, offset, err := utils.ComputeMetaData(page, perPage, int(totalRecords))
+	if err != nil {
+		return cart, metaData, err
+	}
+	//fmt.Println("************* %v", Id)
+	err = database.DB.Raw("SELECT * FROM cart_items WHERE  user_id=? OFFSET ? LIMIT ?;", Id, offset, perPage).Scan(&cart).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return cart, metaData, errors.New("Record not found")
+		}
+		return cart, metaData, err
+	}
+	return cart, metaData, nil
 }
 func Deleteitem(Id, Quantity, U_Id int) error {
 	var OldQuantity, Price int

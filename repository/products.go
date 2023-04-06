@@ -4,6 +4,9 @@ import (
 	"errors"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
+	"github/jaseelaali/orchid/utils"
+
+	"gorm.io/gorm"
 )
 
 func Addproduct(product models.Products) error {
@@ -72,12 +75,24 @@ func Deleteproduct(Id int) error {
 	return nil
 
 }
-func Viewproduct() ([]models.Products, error) {
+func Viewproduct(page, perPage int) ([]models.Products, utils.MetaData, error) {
 	Products := []models.Products{}
-	err := database.DB.Raw("SELECT* FROM products").Scan(&Products)
+	var totalRecords int64
+	err := database.DB.Raw("SELECT COUNT(id) FROM products  ;").Scan(&totalRecords).Error
 	if err != nil {
-		return Products, err.Error
+		return Products, utils.MetaData{}, err
 	}
-	return Products, nil
+	metaData, offset, err := utils.ComputeMetaData(page, perPage, int(totalRecords))
+	if err != nil {
+		return Products, metaData, err
+	}
+	err = database.DB.Raw("SELECT* FROM products OFFSET ? LIMIT ?;", offset, perPage).Scan(&Products).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return Products, metaData, errors.New("Record not found")
+		}
+		return Products, metaData, err
+	}
+	return Products, metaData, nil
 
 }

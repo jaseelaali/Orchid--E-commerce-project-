@@ -45,8 +45,19 @@ func AddOrder(r *gin.Context) {
 	repository.ClearCart(user_id)
 }
 func ShowOrder(r *gin.Context) {
+
 	user_id := repository.GetId(r)
-	order, err := repository.Show_Order(user_id)
+	var Body struct {
+		Page    int `json:"page" binding:"required"`
+		Perpage int `json:"perpage" binding:"required"`
+	}
+	err := r.ShouldBind(&Body)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": err.Error()})
+		return
+	}
+	order, metadata, err := repository.Show_Order(user_id, Body.Page, Body.Perpage)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"error": err.Error(),
@@ -54,7 +65,8 @@ func ShowOrder(r *gin.Context) {
 		return
 	}
 	r.JSON(200, gin.H{
-		"success": order,
+		"success":  order,
+		"metadata": metadata,
 	})
 }
 func CancelOrder(r *gin.Context) {

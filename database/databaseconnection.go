@@ -45,6 +45,7 @@ func DatabaseConnection() {
 		&models.OrderedProduct{},
 		&models.WishList{},
 		&models.ViewWishList{},
+		&models.Wallet{},
 	)
 	if err != nil {
 		log.Println("error in syncing the database")

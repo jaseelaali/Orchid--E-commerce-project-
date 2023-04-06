@@ -121,7 +121,25 @@ func DeleteProducts(r *gin.Context) {
 
 }
 func ViewProducts(r *gin.Context) {
-	Products, err := repository.Viewproduct()
+	//   page :=r.Query("page")
+	//   if page==""{
+	//      r.JSON(400,gin.H{
+	// 		"error":"error",
+	// 	 })
+	// 	 return
+	//   }
+
+	var Body struct {
+		Page    int `json:"page" binding:"required"`
+		Perpage int `json:"perpage" binding:"required"`
+	}
+	err := r.ShouldBind(&Body)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": err.Error()})
+		return
+	}
+	Products, metadata, err := repository.Viewproduct(Body.Page, Body.Perpage)
 	if err != nil {
 
 		r.JSON(400, gin.H{
@@ -130,5 +148,6 @@ func ViewProducts(r *gin.Context) {
 	}
 	r.JSON(200, gin.H{
 		"products": Products,
+		"metadata": metadata,
 	})
 }

@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
+	utils "github/jaseelaali/orchid/utils"
+
+	"gorm.io/gorm"
 	//"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,14 +21,52 @@ func CreateUser(newUser models.User) error {
 	return nil
 
 }
-func View() ([]models.UserResponses, error) {
-	users := []models.UserResponses{}
-	err := database.DB.Raw("SELECT * FROM users;").Scan(&users)
-	if err.Error != nil {
-		return users, err.Error
+
+/*
+	func View() ([]models.UserResponses, error)(metadata,int,error){
+		users := []models.UserResponses{}
+		var totalRecords int64
+		err := database.DB.Raw("SELECT COUNT(id)FROM users ;").Scan(&totalRecords)
+		metaData, offset, err = utils.ComputeMetaData(page, perPage, int(totalRecords))
+		if err != nil {
+			return Users, metaData, err
+		}
+
+		err = database.DB.Raw("SELECT * FROM users .Offset(offset).Limit(perPage);").Scan(&users)
+		is := errors.Is(result.Error, gorm.ErrRecordNotFound)
+		if is == true {
+			return Users, metaData, errors.New("Record not found")
+		}
+		return Users, metaData, nil
+		// if err.Error != nil {
+		// 	return users, err.Error
+		// }
+		// return users, nil
 	}
-	return users, nil
+*/
+func View(page, perPage int) ([]models.UserResponses, utils.MetaData, error) {
+	users := []models.UserResponses{}
+	var totalRecords int64
+	err := database.DB.Raw("SELECT COUNT(id) FROM users;").Scan(&totalRecords).Error
+	if err != nil {
+		return users, utils.MetaData{}, err
+	}
+	metaData, offset, err := utils.ComputeMetaData(page, perPage, int(totalRecords))
+	if err != nil {
+		return users, metaData, err
+	}
+
+	err = database.DB.Raw("SELECT * FROM users OFFSET ? LIMIT ?;", offset, perPage).Scan(&users).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return users, metaData, errors.New("Record not found")
+		}
+		return users, metaData, err
+	}
+
+	return users, metaData, nil
 }
+
 func BlockUser(user_id int) error {
 	//user_id = user_id
 	var status string
@@ -54,21 +95,45 @@ func UnBlockUser(user_id int) error {
 	}
 	return nil
 }
-func BlocUsers() ([]models.UserResponses, error) {
+func BlocUsers(page, perPage int) ([]models.UserResponses, utils.MetaData, error) {
 	users := []models.UserResponses{}
-	err := database.DB.Raw("SELECT * FROM users WHERE status='blocked';").Scan(&users)
+	var totalRecords int64
+	err := database.DB.Raw("SELECT COUNT(id) FROM users;").Scan(&totalRecords).Error
 	if err != nil {
-		return users, err.Error
+		return users, utils.MetaData{}, err
 	}
-	return users, nil
+	metaData, offset, err := utils.ComputeMetaData(page, perPage, int(totalRecords))
+	if err != nil {
+		return users, metaData, err
+	}
+	err = database.DB.Raw("SELECT * FROM users WHERE status='blocked' OFFSET ? LIMIT ?;", offset, perPage).Scan(&users).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return users, metaData, errors.New("Record not found")
+		}
+		return users, metaData, err
+	}
+	return users, metaData, nil
 }
-func ActiveUser() ([]models.UserResponses, error) {
+func ActiveUser(page, perPage int) ([]models.UserResponses, utils.MetaData, error) {
 	users := []models.UserResponses{}
-	err := database.DB.Raw("SELECT * FROM users WHERE status='active';").Scan(&users)
+	var totalRecords int64
+	err := database.DB.Raw("SELECT COUNT(id) FROM users;").Scan(&totalRecords).Error
 	if err != nil {
-		return users, err.Error
+		return users, utils.MetaData{}, err
 	}
-	return users, nil
+	metaData, offset, err := utils.ComputeMetaData(page, perPage, int(totalRecords))
+	if err != nil {
+		return users, metaData, err
+	}
+	err = database.DB.Raw("SELECT * FROM users WHERE status='active'OFFSET ? LIMIT ?;", offset, perPage).Scan(&users).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return users, metaData, errors.New("Record not found")
+		}
+		return users, metaData, err
+	}
+	return users, metaData, nil
 }
 
 // func NewPassword(password string, email string) error {

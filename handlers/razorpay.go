@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
 	"github/jaseelaali/orchid/repository"
 	"strconv"
@@ -23,8 +24,12 @@ type Home struct {
 }
 
 func Razorpay(r *gin.Context) {
-	user_id := 24
-	address_id := 19
+	//user_id := repository.GetId(r)
+	user_id := 3
+	address_id := 11
+	//var body
+	//var address_id int
+	database.DB.Raw("SELECT id FROM addresses WHERE user_id=$1;", user_id).Scan(&address_id)
 	fmt.Println(user_id)
 
 	total_price, err := repository.Sum(user_id)
@@ -47,7 +52,7 @@ func Razorpay(r *gin.Context) {
 	Order_Id := fmt.Sprint(body["id"])
 	order_id, _ := strconv.Atoi(Order_Id)
 	Home := Home{
-		userid:      "24",
+		userid:      fmt.Sprint(user_id),
 		Name:        "jaseela",
 		total_price: total_price,
 		Amount:      total_price,
@@ -94,7 +99,8 @@ func Payment_Success(r *gin.Context) {
 	// 	return
 	// }
 	signature := r.Query("signature")
-	user_id := 24
+	//user_id := repository.GetId(r)
+	user_id := 3
 	err := repository.OrderUpdation(payment_id, user_id)
 	if err != nil {
 		r.JSON(400, gin.H{
@@ -102,7 +108,7 @@ func Payment_Success(r *gin.Context) {
 		})
 		return
 	}
-	err = repository.OrderStatus(user_id)
+	err = repository.OrderStatus(user_id,payment_id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),
