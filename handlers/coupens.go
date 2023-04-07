@@ -3,29 +3,37 @@ package handlers
 import (
 	"fmt"
 	"github/jaseelaali/orchid/repository"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func AddCoupens(r *gin.Context) {
-
-	var body struct {
-		Code string `json:"code"`
-
-		MinAmount int `json:"minamount"`
-		Amount    int `json:"amount"`
+	code := r.Query("code")
+	if code == "" {
+		r.JSON(400, gin.H{
+			"message": "code is missing",
+		})
+		return
 	}
-	err := r.Bind(&body)
+	minamount, err := strconv.Atoi(r.Query("minamount"))
 	if err != nil {
 		r.JSON(400, gin.H{
-			"error": "error in binding data",
+			"message": "minimum amount is missing",
+		})
+		return
+	}
+	amount, err := strconv.Atoi(r.Query("amount"))
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": "discount amount is missing",
 		})
 		return
 	}
 	var expiry time.Time
 	expiry = time.Now().Add(time.Hour * 24 * 1)
-	err = repository.Addcoupen(body.Code, expiry, body.MinAmount, body.Amount)
+	err = repository.Addcoupen(code, expiry,minamount, amount)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"error": err.Error(),

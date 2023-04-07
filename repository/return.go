@@ -27,7 +27,9 @@ func ReturnProduct(user_id int, order_id, product_id string) error {
 			amount := order.TotalCartAmount - total_product_price
 			database.DB.Raw("UPDATE orders SET total_cart_amount=$1,total_amount=$2 WHERE payment_id=$3;", amount, amount-coupen.Amount, paymentid).Scan(&models.Order{})
 			database.DB.Raw("UPDATE order_statuses SET delivery=$1 WHERE payment_id=$2 AND product_id=$3;", "returned", paymentid, product_id).Scan(&models.OrderStatus{})
+			
 			database.DB.Raw("INSERT INTO wallets(user_id, money)VALUES($1,$2);", user_id, total_product_price).Scan(&models.Wallet{})
+
 		} else {
 			price := order.TotalCartAmount - total_product_price
 			database.DB.Raw("UPDATE orders SET total_cart_amount=$1,total_amount=$2 WHERE payment_id=$3;", price, price, paymentid).Scan(&models.Order{})

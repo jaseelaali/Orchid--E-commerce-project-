@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github/jaseelaali/orchid/models"
 	"github/jaseelaali/orchid/repository"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,25 +29,16 @@ func AddProducts(r *gin.Context) {
 	r.JSON(200, gin.H{"message": " add product successfully"})
 }
 func EditProducts(r *gin.Context) {
+	id := repository.GetId(r)
+	product_name := r.Query("product name")
+	product_colour := r.Query("product colour")
+	product_size, err := strconv.Atoi(r.Query("product size"))
+	product_brand := r.Query("product brand")
+	product_price, err := strconv.Atoi(r.Query("product price"))
+	stock, err := strconv.Atoi(r.Query("stock"))
 
-	var body struct {
-		Id             int    `json:"id" binding:"required"`
-		Product_Name   string `json:"product_name"`
-		Product_Colour string `json:"product_colour"`
-		Product_Size   int    `json:"product_size"`
-		Product_Brand  string `json:"product_brand"`
-		Product_Price  int    `json:"product_price"`
-		Stock          int    `json:"stock"`
-	}
-	err := r.Bind(&body)
-	if err != nil {
-		r.JSON(400, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
-	if body.Product_Name != "" {
-		err := repository.EditProductName(body.Product_Name, body.Id)
+	if product_name != "" {
+		err := repository.EditProductName(product_name, id)
 		if err != nil {
 			r.JSON(400, gin.H{
 				"message": err.Error(),
@@ -55,8 +47,8 @@ func EditProducts(r *gin.Context) {
 		}
 
 	}
-	if body.Product_Size != 0 {
-		err = repository.EditProductSize(body.Product_Size, body.Id)
+	if product_colour != "" {
+		err := repository.EditProductName(product_colour, id)
 		if err != nil {
 			r.JSON(400, gin.H{
 				"message": err.Error(),
@@ -64,8 +56,8 @@ func EditProducts(r *gin.Context) {
 			return
 		}
 	}
-	if body.Product_Brand != "" {
-		err = repository.EditProductBrand(body.Product_Brand, body.Id)
+	if product_size != 0 {
+		err = repository.EditProductSize(product_size, id)
 		if err != nil {
 			r.JSON(400, gin.H{
 				"message": err.Error(),
@@ -73,8 +65,8 @@ func EditProducts(r *gin.Context) {
 			return
 		}
 	}
-	if body.Product_Price != 0 {
-		err = repository.EditProductPrice(body.Product_Price, body.Id)
+	if product_brand != "" {
+		err = repository.EditProductBrand(product_brand, id)
 		if err != nil {
 			r.JSON(400, gin.H{
 				"message": err.Error(),
@@ -82,8 +74,17 @@ func EditProducts(r *gin.Context) {
 			return
 		}
 	}
-	if body.Stock != 0 {
-		err = repository.EditProductStock(body.Stock, body.Id)
+	if product_price != 0 {
+		err = repository.EditProductPrice(product_price, id)
+		if err != nil {
+			r.JSON(400, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+	}
+	if stock != 0 {
+		err = repository.EditProductStock(stock, id)
 		if err != nil {
 			r.JSON(400, gin.H{
 				"message": err.Error(),
@@ -96,19 +97,11 @@ func EditProducts(r *gin.Context) {
 	})
 
 }
-func DeleteProducts(r *gin.Context) {
 
-	var body struct {
-		Product_id int `json:"product_id" binding:"required"`
-	}
-	err := r.Bind(&body)
-	if err != nil {
-		r.JSON(400, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
-	err = repository.Deleteproduct(body.Product_id)
+func DeleteProducts(r *gin.Context) {
+	id, err := strconv.Atoi(r.Query("id"))
+
+	err = repository.Deleteproduct(id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),
@@ -121,25 +114,22 @@ func DeleteProducts(r *gin.Context) {
 
 }
 func ViewProducts(r *gin.Context) {
-	//   page :=r.Query("page")
-	//   if page==""{
-	//      r.JSON(400,gin.H{
-	// 		"error":"error",
-	// 	 })
-	// 	 return
-	//   }
-
-	var Body struct {
-		Page    int `json:"page" binding:"required"`
-		Perpage int `json:"perpage" binding:"required"`
-	}
-	err := r.ShouldBind(&Body)
+	page, err := strconv.Atoi(r.Query("page"))
 	if err != nil {
 		r.JSON(400, gin.H{
-			"message": err.Error()})
+			"error": "didn't get page number",
+		})
 		return
 	}
-	Products, metadata, err := repository.Viewproduct(Body.Page, Body.Perpage)
+	perpage, err := strconv.Atoi(r.Query("perpage"))
+	if err != nil {
+		r.JSON(400, gin.H{
+			"error": "didn't get perpage number",
+		})
+		return
+	}
+
+	Products, metadata, err := repository.Viewproduct(page, perpage)
 	if err != nil {
 
 		r.JSON(400, gin.H{

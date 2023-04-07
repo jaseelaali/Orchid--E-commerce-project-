@@ -2,23 +2,21 @@ package handlers
 
 import (
 	"github/jaseelaali/orchid/repository"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func AddWishList(r *gin.Context) {
-	var body struct {
-		Product_id int `json:"product_id"`
-	}
-	err := r.Bind(&body)
+	id, err := strconv.Atoi(r.Query("id"))
 	if err != nil {
 		r.JSON(400, gin.H{
-			"error": "error in binding data",
+			"message": "didn't get id",
 		})
 		return
 	}
 	user_id := repository.GetId(r)
-	err = repository.AddWishlist(user_id, body.Product_id)
+	err = repository.AddWishlist(user_id, id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"errror": err.Error(),
@@ -43,18 +41,15 @@ func ListWishlist(r *gin.Context) {
 	})
 }
 func RemoveWishlist(r *gin.Context) {
-	var body struct {
-		Product_id int `json:"product_id"`
-	}
-	err := r.Bind(&body)
+	id, err := strconv.Atoi(r.Query("id"))
 	if err != nil {
 		r.JSON(400, gin.H{
-			"error": "error in binding data",
+			"message": "didn't get id",
 		})
 		return
 	}
 	user_id := repository.GetId(r)
-	err = repository.RemoveWishList(user_id, body.Product_id)
+	err = repository.RemoveWishList(user_id, id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"error": err.Error(),

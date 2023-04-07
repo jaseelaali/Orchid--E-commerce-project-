@@ -23,11 +23,10 @@ func User(r *gin.Engine) {
 		user.DELETE("/deleteprofile", middleware.RequiredAuthenticationUser, handlers.DeleteProfile)
 		// cart management
 		user.POST("/addcart", middleware.RequiredAuthenticationUser, handlers.AddCart)
-		user.POST("/viewcart", middleware.RequiredAuthenticationUser, handlers.ViewCart)
+		user.GET("/viewcart", middleware.RequiredAuthenticationUser, handlers.ViewCart)
 		user.DELETE("/deleteitem", middleware.RequiredAuthenticationUser, handlers.DeleteItem)
 		//product
 		user.GET("/viewproducts", middleware.RequiredAuthenticationUser, handlers.ViewProducts)
-
 		//change password
 		user.POST("changepassword", middleware.RequiredAuthenticationUser, handlers.ChangePassword)
 		user.POST("verifyotp", middleware.RequiredAuthenticationUser, handlers.VerifyOtp)
@@ -38,20 +37,20 @@ func User(r *gin.Engine) {
 		user.GET("/viewaddress", middleware.RequiredAuthenticationUser, handlers.ViewAddress)
 		// order management
 		user.POST("/addorder", middleware.RequiredAuthenticationUser, handlers.AddOrder)
-		user.POST("/showorder", middleware.RequiredAuthenticationUser, handlers.ShowOrder)
+		user.GET("/showorder", middleware.RequiredAuthenticationUser, handlers.ShowOrder)
 		user.DELETE("/cancelorder", middleware.RequiredAuthenticationUser, handlers.CancelOrder)
 		//payment
-		user.GET("/razorpay", handlers.Razorpay)
-		user.GET("/payment-success", handlers.Payment_Success)
+		user.GET("/razorpay", middleware.RequiredAuthenticationUser, handlers.Razorpay)
+		user.GET("/payment-success", middleware.RequiredAuthenticationUser, handlers.Payment_Success)
 		//coupens
-		user.POST("/listcoupens", middleware.RequiredAuthenticationUser, handlers.ListCoupen)
+		user.GET("/listcoupens", middleware.RequiredAuthenticationUser, handlers.ListCoupen)
 		user.POST("/applycoupens", middleware.RequiredAuthenticationUser, handlers.ApplyCoupen)
 		//wishlist
 		user.POST("/addwishlist", middleware.RequiredAuthenticationUser, handlers.AddWishList)
 		user.GET("/listwishlist", middleware.RequiredAuthenticationUser, handlers.ListWishlist)
 		user.DELETE("/removewishlist", middleware.RequiredAuthenticationUser, handlers.RemoveWishlist)
 		//Return my product
-		user.GET("/returnproduct", middleware.RequiredAuthenticationUser, handlers.ReturnMyProduct)
+		user.POST("/returnproduct", middleware.RequiredAuthenticationUser, handlers.ReturnMyProduct)
 
 	}
 }
@@ -61,12 +60,12 @@ func Admin(r *gin.Engine) {
 		//admin login
 		admin.POST("/login", handlers.AdminLogin)
 		//user management
-		admin.POST("/view", middleware.RequiredAuthenticationAdmin, handlers.ViewUser)
+		admin.GET("/view", middleware.RequiredAuthenticationAdmin, handlers.ViewUser)
 		admin.GET("/speacificuser", middleware.RequiredAuthenticationAdmin, handlers.SpeacificUser)
 		admin.POST("/block", middleware.RequiredAuthenticationAdmin, handlers.BlockUser)
 		admin.POST("/unblock", middleware.RequiredAuthenticationAdmin, handlers.UnBlockUser)
-		admin.POST("/viewblockedusers", middleware.RequiredAuthenticationAdmin, handlers.BlockedUsers)
-		admin.POST("/viewunblockedusers", middleware.RequiredAuthenticationAdmin, handlers.ActiveUsers)
+		admin.GET("/viewblockedusers", middleware.RequiredAuthenticationAdmin, handlers.BlockedUsers)
+		admin.GET("/viewunblockedusers", middleware.RequiredAuthenticationAdmin, handlers.ActiveUsers)
 		// category mangement
 		admin.POST("/addcategory", middleware.RequiredAuthenticationAdmin, handlers.AddCategory)
 		admin.PATCH("editcategory", middleware.RequiredAuthenticationAdmin, handlers.EditCategory)
@@ -81,7 +80,7 @@ func Admin(r *gin.Engine) {
 		admin.POST("/addproduct", middleware.RequiredAuthenticationAdmin, handlers.AddProducts)
 		admin.PATCH("/editproducts", middleware.RequiredAuthenticationAdmin, handlers.EditProducts)
 		admin.DELETE("/deleteproducts", middleware.RequiredAuthenticationAdmin, handlers.DeleteProducts)
-		admin.POST("/viewproducts", middleware.RequiredAuthenticationAdmin, handlers.ViewProducts)
+		admin.GET("/viewproducts", middleware.RequiredAuthenticationAdmin, handlers.ViewProducts)
 		//coupen
 		admin.POST("/addcoupen", middleware.RequiredAuthenticationAdmin, handlers.AddCoupens)
 		admin.GET("/listcoupen", middleware.RequiredAuthenticationAdmin, handlers.ListCoupen)

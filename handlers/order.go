@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/repository"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,19 +46,22 @@ func AddOrder(r *gin.Context) {
 	repository.ClearCart(user_id)
 }
 func ShowOrder(r *gin.Context) {
-
-	user_id := repository.GetId(r)
-	var Body struct {
-		Page    int `json:"page" binding:"required"`
-		Perpage int `json:"perpage" binding:"required"`
-	}
-	err := r.ShouldBind(&Body)
+	page, err := strconv.Atoi(r.Query("page"))
+	perpage, err := strconv.Atoi(r.Query("perpage"))
 	if err != nil {
 		r.JSON(400, gin.H{
-			"message": err.Error()})
+			"message": "page not geted",
+		})
 		return
 	}
-	order, metadata, err := repository.Show_Order(user_id, Body.Page, Body.Perpage)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": "perpage not geted",
+		})
+		return
+	}
+	user_id := repository.GetId(r)
+	order, metadata, err := repository.Show_Order(user_id, page, perpage)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"error": err.Error(),
@@ -71,8 +75,6 @@ func ShowOrder(r *gin.Context) {
 }
 func CancelOrder(r *gin.Context) {
 	user_id := repository.GetId(r)
-	fmt.Printf("......................iddd:%v...", user_id)
-
 	err := repository.Cancel_Order(user_id)
 	if err != nil {
 		r.JSON(400, gin.H{

@@ -24,11 +24,11 @@ type Home struct {
 }
 
 func Razorpay(r *gin.Context) {
-	//user_id := repository.GetId(r)
-	user_id := 3
-	address_id := 11
+	user_id := repository.GetId(r)
+	//user_id := 4
+	//address_id := 1
 	//var body
-	//var address_id int
+	var address_id int
 	database.DB.Raw("SELECT id FROM addresses WHERE user_id=$1;", user_id).Scan(&address_id)
 	fmt.Println(user_id)
 
@@ -99,8 +99,9 @@ func Payment_Success(r *gin.Context) {
 	// 	return
 	// }
 	signature := r.Query("signature")
-	//user_id := repository.GetId(r)
-	user_id := 3
+	user_id := repository.GetId(r)
+	fmt.Println(user_id)
+	//user_id := 4
 	err := repository.OrderUpdation(payment_id, user_id)
 	if err != nil {
 		r.JSON(400, gin.H{
@@ -108,7 +109,7 @@ func Payment_Success(r *gin.Context) {
 		})
 		return
 	}
-	err = repository.OrderStatus(user_id,payment_id)
+	err = repository.OrderStatus(user_id, payment_id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),

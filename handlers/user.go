@@ -86,18 +86,24 @@ func UserLogin(r *gin.Context) {
 
 func ViewUser(r *gin.Context) {
 
-	var Body struct {
-		Page    int `json:"page" binding:"required"`
-		Perpage int `json:"perpage" binding:"required"`
-	}
-	err := r.ShouldBind(&Body)
-	if err != nil {
-		r.JSON(400, gin.H{
-			"message": err.Error()})
+	page:=r.Query("page")
+	if page==""{
+		r.JSON(400,gin.H{
+			"message":"didn't get page number",
+		})
 		return
 	}
-	users, metaData, err := repository.View(Body.Page, Body.Perpage)
-	fmt.Println("...............hh", Body.Page, Body.Perpage)
+	perpage:=r.Query("perpage")
+	if perpage==""{
+		r.JSON(400,gin.H{
+			"message":"didn't get perpage number",
+		})
+		return
+	}
+	pagenumber,_:=strconv.Atoi(page)
+	perpagenumber,_:=strconv.Atoi(perpage)
+
+	users, metaData, err := repository.View(pagenumber,perpagenumber)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error()})

@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"fmt"
 	"github/jaseelaali/orchid/models"
 	"github/jaseelaali/orchid/repository"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,19 +29,21 @@ func AddCategory(r *gin.Context) {
 	})
 }
 func EditCategory(r *gin.Context) {
-	var body struct {
-		Name string `json:"name"`
-		Id   int    `json:"id"`
-	}
-	err := r.Bind(&body)
+	id, err := strconv.Atoi(r.Query("id"))
 	if err != nil {
 		r.JSON(400, gin.H{
-			"message": "error in binding data",
+			"message": "didn't get id",
 		})
 		return
 	}
-
-	err = repository.Editcategory(body.Name, body.Id)
+	name := r.Query("name")
+	if name == "" {
+		r.JSON(400, gin.H{
+			"message": "didn't get name",
+		})
+		return
+	}
+	err = repository.Editcategory(name, id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),
@@ -54,18 +56,14 @@ func EditCategory(r *gin.Context) {
 
 }
 func DeleteCategory(r *gin.Context) {
-	var body struct {
-		Category_id int `json:"category_id"`
-	}
-	err := r.Bind(&body)
-	fmt.Println(body.Category_id)
+	id, err := strconv.Atoi(r.Query("id"))
 	if err != nil {
 		r.JSON(400, gin.H{
-			"message": "error in binding data",
+			"message": "didn't get name",
 		})
 		return
 	}
-	err = repository.Deletecategory(body.Category_id)
+	err = repository.Deletecategory(id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),
@@ -90,19 +88,21 @@ func ViewCategory(r *gin.Context) {
 
 }
 func EditSubCategory(r *gin.Context) {
-	var body struct {
-		Name string `json:"name"`
-		Id   int    `json:"id"`
-	}
-	err := r.Bind(&body)
+	id, err := strconv.Atoi(r.Query("id"))
 	if err != nil {
 		r.JSON(400, gin.H{
-			"message": "error in binding data",
+			"message": "didn't get id",
 		})
 		return
 	}
-
-	err = repository.EditSubcategory(body.Name, body.Id)
+	name := r.Query("name")
+	if name == "" {
+		r.JSON(400, gin.H{
+			"message": "didn't get name",
+		})
+		return
+	}
+	err = repository.EditSubcategory(name, id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),
@@ -115,18 +115,14 @@ func EditSubCategory(r *gin.Context) {
 
 }
 func DeleteSubCategory(r *gin.Context) {
-	var body struct {
-		SubCategory_id int `json:"subcategory_id"`
-	}
-	err := r.Bind(&body)
+	id, err := strconv.Atoi(r.Query("id"))
 	if err != nil {
 		r.JSON(400, gin.H{
-			"message": "error in binding data",
+			"message": "didn't get name",
 		})
 		return
 	}
-
-	err = repository.DeleteSubcategory(body.SubCategory_id)
+	err = repository.DeleteSubcategory(id)
 	if err != nil {
 		r.JSON(400, gin.H{
 			"message": err.Error(),

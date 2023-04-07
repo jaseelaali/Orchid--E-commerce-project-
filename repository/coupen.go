@@ -82,7 +82,7 @@ func Applycoupen(user_id int, name string) (int, error) {
 				fmt.Println(body.MinAmount)
 				fmt.Printf("........................................")
 				fmt.Println(body1.TotalCartAmount)
-				result := database.DB.Raw("UPDATE orders SET coupen=$1,coupen_name=$2,total_amount=$3 WHERE user_id=$4 AND payment_status=$5;", "applied", name, body1.TotalCartAmount-body.Amount, user_id, "not done").Scan(&models.Order{})
+				result := database.DB.Raw("UPDATE orders SET coupen=$1,coupen_name=$2,discount=$3,total_amount=$4 WHERE user_id=$5 AND payment_status=$6;", "applied", name, body.Amount, body1.TotalCartAmount-body.Amount, user_id, "not done").Scan(&models.Order{})
 				if result.Error != nil {
 					return 0, result.Error
 				} else {
