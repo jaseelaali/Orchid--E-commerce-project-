@@ -41,5 +41,14 @@ func ReturnMyProduct(r *gin.Context) {
 		return
 	}
 	user_id := repository.GetId(r)
-	repository.ReturnProduct(user_id, orderid, productid)
+	err := repository.ReturnProduct(user_id, orderid, productid)
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	r.JSON(200, gin.H{
+		"message": "your product collected soon",
+	})
 }

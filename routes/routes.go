@@ -51,6 +51,8 @@ func User(r *gin.Engine) {
 		user.DELETE("/removewishlist", middleware.RequiredAuthenticationUser, handlers.RemoveWishlist)
 		//Return my product
 		user.POST("/returnproduct", middleware.RequiredAuthenticationUser, handlers.ReturnMyProduct)
+		//wallet
+		user.GET("/mywallet", middleware.RequiredAuthenticationUser, handlers.MyWallet)
 
 	}
 }
