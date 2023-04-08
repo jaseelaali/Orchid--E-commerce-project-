@@ -50,6 +50,7 @@ func Deletecategory(Id int) error {
 }
 func Viewcategory() ([]models.Category, error) {
 	category := []models.Category{}
+
 	err := database.DB.Raw("SELECT * FROM categories;").Scan(&category)
 	if err != nil {
 		return category, err.Error

@@ -29,7 +29,13 @@ func AddProducts(r *gin.Context) {
 	r.JSON(200, gin.H{"message": " add product successfully"})
 }
 func EditProducts(r *gin.Context) {
-	id := repository.GetId(r)
+	id, err := strconv.Atoi(r.Query("product id"))
+	if err != nil {
+		r.JSON(400, gin.H{
+			"message": "product id didn't get",
+		})
+		return
+	}
 	product_name := r.Query("product name")
 	product_colour := r.Query("product colour")
 	product_size, err := strconv.Atoi(r.Query("product size"))
@@ -48,7 +54,7 @@ func EditProducts(r *gin.Context) {
 
 	}
 	if product_colour != "" {
-		err := repository.EditProductName(product_colour, id)
+		err := repository.EditProductColour(product_colour, id)
 		if err != nil {
 			r.JSON(400, gin.H{
 				"message": err.Error(),

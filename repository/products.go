@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
 	"github/jaseelaali/orchid/utils"
@@ -35,6 +36,7 @@ func EditProductName(name string, Id int) error {
 	var count int
 	err := database.DB.Raw("SELECT COUNT(product_name) FROM products WHERE product_name=$1;", name).Scan(&count)
 	if count == 0 {
+		fmt.Println(".........................", name)
 		err = database.DB.Raw("UPDATE products SET product_name=$1 WHERE id =$2;", name, Id).Scan(&models.Products{})
 		return err.Error
 	} else {
@@ -42,6 +44,8 @@ func EditProductName(name string, Id int) error {
 	}
 }
 func EditProductColour(colour string, Id int) error {
+	fmt.Println(".........................", colour, Id)
+
 	err := database.DB.Raw("UPDATE products SET product_colour=$1 WHERE id =$2;", colour, Id).Scan(&models.Products{})
 	return err.Error
 }

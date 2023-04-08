@@ -22,28 +22,7 @@ func CreateUser(newUser models.User) error {
 
 }
 
-/*
-	func View() ([]models.UserResponses, error)(metadata,int,error){
-		users := []models.UserResponses{}
-		var totalRecords int64
-		err := database.DB.Raw("SELECT COUNT(id)FROM users ;").Scan(&totalRecords)
-		metaData, offset, err = utils.ComputeMetaData(page, perPage, int(totalRecords))
-		if err != nil {
-			return Users, metaData, err
-		}
 
-		err = database.DB.Raw("SELECT * FROM users .Offset(offset).Limit(perPage);").Scan(&users)
-		is := errors.Is(result.Error, gorm.ErrRecordNotFound)
-		if is == true {
-			return Users, metaData, errors.New("Record not found")
-		}
-		return Users, metaData, nil
-		// if err.Error != nil {
-		// 	return users, err.Error
-		// }
-		// return users, nil
-	}
-*/
 func View(page, perPage int) ([]models.UserResponses, utils.MetaData, error) {
 	users := []models.UserResponses{}
 	var totalRecords int64

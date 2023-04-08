@@ -75,6 +75,7 @@ func DeleteCategory(r *gin.Context) {
 	})
 }
 func ViewCategory(r *gin.Context) {
+
 	Category, err := repository.Viewcategory()
 	if err != nil {
 		r.JSON(400, gin.H{

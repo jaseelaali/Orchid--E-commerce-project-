@@ -33,11 +33,11 @@ func AdminLogin(r *gin.Context) {
 		return
 	}
 	/*-----------------------------------------------------------------------------------------------------------------------------*/
-	/*password, err := bcrypt.GenerateFromPassword(([]byte(login.Password)), 11)
+	/*password, _ := bcrypt.GenerateFromPassword(([]byte(login.Password)), 11)
 	Password := string(password)
 	fmt.Printf("****password want to databse:%v", Password)
-	database.DB.Raw("UPDATE admins SET password=$1 WHERE email=$2;", Password, admin.Email).Scan(&models.Admin{})*/
-
+	database.DB.Raw("INSERT INTO admins (password,email)VALUES($1,$2);", Password, login.Email).Scan(&models.Admin{})
+	*/
 	/*---------------------------------------------------------------------------------------------------------------------------------*/
 	//generate jwt token
 	//here call token function
@@ -64,7 +64,6 @@ func AdminLogin(r *gin.Context) {
 	// }
 
 }
-
 func SalesReport(r *gin.Context) {
 
 	sales, err := repository.SalesReport()
