@@ -26,7 +26,7 @@ func ComputeMetaData(CurrentPage, perPage, totalRecords int) (MetaData, int, err
 	fmt.Println(perPage)
 
 	if totalPages == 0 || CurrentPage > int(totalPages) {
-		return MetaData{}, -1, errors.New(" no records hg")
+		return MetaData{}, -1, errors.New(" no records ")
 	}
 	return MetaData{
 		CurrentPage:  CurrentPage,

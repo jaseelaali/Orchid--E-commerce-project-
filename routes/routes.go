@@ -61,6 +61,11 @@ func Admin(r *gin.Engine) {
 	{
 		//admin login
 		admin.POST("/login", handlers.AdminLogin)
+		// //junioradmin management
+		// admin.POST("/addadmins", middleware.RequiredAuthenticationAdmin, handlers.AddAdmins)
+		// admin.GET("/viewadmins", middleware.RequiredAuthenticationAdmin, handlers.ViewAdmins)
+		// admin.DELETE("/deleteadmins", middleware.RequiredAuthenticationAdmin, handlers.DeleteAdmins)
+
 		//user management
 		admin.GET("/view", middleware.RequiredAuthenticationAdmin, handlers.ViewUser)
 		admin.GET("/speacificuser", middleware.RequiredAuthenticationAdmin, handlers.SpeacificUser)
