@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/csv"
+	"fmt"
 	"github/jaseelaali/orchid/database"
 	"github/jaseelaali/orchid/models"
 	"github/jaseelaali/orchid/repository"
@@ -81,7 +82,7 @@ func SalesReport(r *gin.Context) {
 	wr := csv.NewWriter(r.Writer)
 
 	// Write CSV header row
-	headers := []string{"Order ID", "User ID", "Coupon", "Total Amount", "Payment Method", "Payment ID"}
+	headers := []string{"Order ID", "User ID", "Product ID", "Payment ID", "Delivery Status"}
 	if err := wr.Write(headers); err != nil {
 		r.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -91,11 +92,10 @@ func SalesReport(r *gin.Context) {
 	for _, sale := range sales {
 		row := []string{
 			strconv.Itoa(int(sale.ID)),
-			strconv.Itoa(sale.User_Id),
-			sale.Coupen_Name,
-			strconv.Itoa(sale.Total_Amount),
-			sale.Payment_Method,
-			sale.Payment_Id,
+			strconv.Itoa(sale.User_id),
+			fmt.Sprintf("%d", sale.Product_id),
+			string(sale.Payment_Id),
+			sale.Delivery,
 		}
 		if err := wr.Write(row); err != nil {
 			r.AbortWithError(http.StatusInternalServerError, err)

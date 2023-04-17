@@ -29,6 +29,7 @@ func DatabaseConnection() {
 	log.Println("Successfully connected to database")
 	//sync database
 	err = DB.AutoMigrate(
+		//&models.SuperAdmin{},
 		&models.Admin{},
 		&models.User{},
 		&models.UserResponses{},

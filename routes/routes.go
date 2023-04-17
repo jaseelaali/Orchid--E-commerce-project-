@@ -15,8 +15,8 @@ func User(r *gin.Engine) {
 
 	{
 		// user signup+login
-		user.POST("signup", handlers.UserSignUp)
-		user.POST("login", handlers.UserLogin)
+		user.POST("/signup", handlers.UserSignUp)
+		user.POST("/loginuser", handlers.UserLogin)
 		//profile
 		user.GET("/aboutme", middleware.RequiredAuthenticationUser, handlers.Profile)
 		user.PATCH("/editmyprofile", middleware.RequiredAuthenticationUser, handlers.EditProfile)
@@ -59,12 +59,14 @@ func User(r *gin.Engine) {
 func Admin(r *gin.Engine) {
 	admin := r.Group("/admin")
 	{
-		//admin login
-		admin.POST("/login", handlers.AdminLogin)
-		// //junioradmin management
+		// super admin login
+		admin.POST("/superadminlogin", handlers.AdminLogin)
+		//admin management
 		// admin.POST("/addadmins", middleware.RequiredAuthenticationAdmin, handlers.AddAdmins)
 		// admin.GET("/viewadmins", middleware.RequiredAuthenticationAdmin, handlers.ViewAdmins)
 		// admin.DELETE("/deleteadmins", middleware.RequiredAuthenticationAdmin, handlers.DeleteAdmins)
+		// admin login
+		admin.POST("/adminlogin", handlers.AdminLogin)
 
 		//user management
 		admin.GET("/view", middleware.RequiredAuthenticationAdmin, handlers.ViewUser)
