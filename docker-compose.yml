@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orchid_footware
+      DATABASE_HOST: db 
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+
+  web:
+    image: jaseelaaa/orchid_footware
+    env_file:
+      - .env
+    ports:
+      - "9080:9080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: orchid
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    depends_on:
+      - db
+    volumes:
+      - ./template:/app/template
+
+volumes:
+  db-data:
